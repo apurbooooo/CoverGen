@@ -1,0 +1,548 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   CoverGen — Preview Panel & Template Styles
+   Dot-grid artboard, paper workspace, zoom controls
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── Preview Container ── */
+
+.preview-outer {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.preview-toolbar {
+  display: flex;
+  height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.preview-toolbar-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-text-muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.preview-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+
+.preview-page-type {
+  margin-left: 0.1rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ── Artboard / Scroll Area ── */
+
+.preview-scroll-area {
+  display: flex;
+  min-height: 480px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  overflow: auto;
+  padding: 1.25rem;
+  background-color: var(--color-surface-alt);
+  background-image: radial-gradient(circle, var(--color-border) 0.75px, transparent 0.75px);
+  background-size: 20px 20px;
+  overscroll-behavior: contain;
+}
+
+.a4-frame { position: relative; flex: 0 0 auto; }
+.a4-frame { margin-inline: auto; }
+
+
+/* ── Paper ── */
+
+.a4-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 794px;
+  min-height: 1123px;
+  overflow: visible;
+  transform-origin: top left;
+  border-radius: 1px;
+  background: #fff;
+  color: #1a202c;
+  color-scheme: light;
+  box-shadow: var(--shadow-paper);
+  font-family: 'Times New Roman', serif;
+}
+
+.a4-page h1, .a4-page h2, .a4-page h3, .a4-page p { color: inherit; }
+
+
+/* ── Empty State ── */
+
+.preview-empty {
+  display: flex;
+  min-height: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem 1.5rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.preview-empty-icon {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+}
+
+.preview-empty h3 {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.preview-empty p {
+  max-width: 240px;
+  color: var(--color-text-muted);
+  font-size: 0.73rem;
+  line-height: 1.5;
+}
+
+
+/* ── Zoom Controls ── */
+
+.zoom-control { display: flex; align-items: center; gap: 0.2rem; }
+
+.zoom-btn {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.zoom-btn:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.zoom-btn:disabled { cursor: not-allowed; opacity: 0.3; }
+
+.zoom-label {
+  min-width: 36px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  text-align: center;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Template Preview Styles (A4 Document Templates)
+   These control the actual document content rendering — do NOT alter.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Shared page padding */
+.tpl-page {
+  padding: 60px 72px;
+  min-height: 1123px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.tpl-page .uni-name,
+.tpl-page .uni-dept,
+.tpl-page .uni-session,
+.tpl-page .assign-type,
+.tpl-page .assign-title,
+.tpl-page .course-info,
+.tpl-page .semester-info,
+.tpl-page .tpl-date-row,
+.tpl-page .tpl-person-name,
+.tpl-page .tpl-person-detail,
+.tpl-page .tpl-note {
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.tpl-by-to { min-width: 0; }
+.tpl-by-to-col { min-width: 0; }
+
+/* Classic Academic */
+.tpl-classic {
+  align-items: center;
+  text-align: center;
+}
+
+.tpl-classic .uni-logo {
+  margin-bottom: 20px;
+}
+
+.tpl-classic .uni-name {
+  font-size: calc(24px * var(--font-scale-university-name, 1));
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.tpl-classic .uni-dept {
+  font-size: calc(15px * var(--font-scale-department, 1));
+  color: #4A5568;
+  margin-bottom: 4px;
+}
+
+.tpl-classic .uni-session {
+  font-size: calc(13px * var(--font-scale-session, 1));
+  color: #718096;
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+.tpl-hr {
+  width: 100%;
+  height: 2px;
+  margin: 20px 0;
+  border: none;
+}
+
+.tpl-classic .assign-type {
+  font-size: calc(13px * var(--font-scale-assignment-type, 1));
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.tpl-classic .assign-title {
+  font-size: calc(28px * var(--font-scale-assignment-title, 1));
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1A202C;
+  margin-bottom: 14px;
+}
+
+.tpl-classic .course-info {
+  font-size: 15px;
+  color: #4A5568;
+  margin-bottom: 4px;
+}
+
+.tpl-classic .semester-info {
+  font-size: calc(13px * var(--font-scale-semester, 1));
+  color: #718096;
+}
+
+.tpl-by-to {
+  display: flex;
+  width: 100%;
+  gap: 24px;
+  text-align: left;
+  margin: 16px 0;
+}
+
+.tpl-by-to-col {
+  flex: 1;
+}
+
+.tpl-by-to-label {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid currentColor;
+}
+
+.tpl-by-to-label.submitted-by-heading { font-size: calc(14px * var(--font-scale-submitted-by-heading, 1)); }
+.tpl-by-to-label.submitted-to-heading { font-size: calc(14px * var(--font-scale-submitted-to-heading, 1)); }
+
+.tpl-person-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A202C;
+  margin-bottom: 3px;
+}
+
+.tpl-person-name.student-name { font-size: calc(14px * var(--font-scale-name, 1)); }
+.tpl-person-name.teacher-name { font-size: calc(14px * var(--font-scale-teacher-name, 1)); }
+
+.tpl-person-detail {
+  font-size: 12px;
+  color: #4A5568;
+  margin-bottom: 2px;
+}
+
+.tpl-person-detail.student-id { font-size: calc(12px * var(--font-scale-student-id, 1)); }
+.tpl-person-detail.student-session-year { font-size: calc(12px * var(--font-scale-session-year, 1)); }
+.tpl-person-detail.student-department { font-size: calc(12px * var(--font-scale-department, 1)); }
+.tpl-person-detail.teacher-designation { font-size: calc(12px * var(--font-scale-teacher-designation, 1)); }
+.tpl-person-detail.teacher-department { font-size: calc(12px * var(--font-scale-teacher-department, 1)); }
+
+.course-info .course-name { font-size: calc(1em * var(--font-scale-course-name, 1)); }
+.course-info .course-code { font-size: calc(1em * var(--font-scale-course-code, 1)); }
+
+.tpl-spacer { flex: 1; }
+
+.tpl-date-row {
+  font-size: calc(13px * var(--font-scale-submission-date, 1));
+  color: #4A5568;
+}
+
+.tpl-note {
+  font-size: calc(12px * var(--font-scale-additional-note, 1));
+  color: #718096;
+  font-style: italic;
+  margin-top: 6px;
+}
+
+/* Modern Minimal */
+.tpl-modern {
+  text-align: left;
+  padding-left: 96px;
+  border-left: none;
+  position: relative;
+}
+
+.tpl-modern::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+}
+
+.tpl-modern .uni-logo { margin-bottom: 20px; }
+.tpl-modern .uni-name { font-size: calc(20px * var(--font-scale-university-name, 1)); font-weight: 700; margin-bottom: 4px; }
+.tpl-modern .uni-dept { font-size: calc(13px * var(--font-scale-department, 1)); color: #4A5568; margin-bottom: 2px; }
+.tpl-modern .uni-session { font-size: calc(12px * var(--font-scale-session, 1)); color: #718096; font-style: italic; }
+
+.tpl-modern .assign-type {
+  font-size: calc(12px * var(--font-scale-assignment-type, 1));
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.tpl-modern .assign-title {
+  font-size: calc(30px * var(--font-scale-assignment-title, 1));
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1A202C;
+  margin-bottom: 10px;
+}
+
+.tpl-modern .course-info { font-size: 14px; color: #4A5568; margin-bottom: 3px; }
+.tpl-modern .semester-info { font-size: calc(13px * var(--font-scale-semester, 1)); color: #718096; }
+
+.tpl-modern .by-to-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.tpl-modern .by-to-label.submitted-by-heading { font-size: calc(11px * var(--font-scale-submitted-by-heading, 1)); }
+.tpl-modern .by-to-label.submitted-to-heading { font-size: calc(11px * var(--font-scale-submitted-to-heading, 1)); }
+
+/* Formal University */
+.tpl-formal {
+  align-items: center;
+  text-align: center;
+}
+
+.tpl-formal .uni-header-band {
+  width: 100%;
+  padding: 14px 24px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+.tpl-formal .uni-name {
+  font-size: calc(22px * var(--font-scale-university-name, 1));
+  font-weight: 700;
+  color: white;
+}
+
+.tpl-formal .uni-dept { font-size: calc(14px * var(--font-scale-department, 1)); color: #4A5568; margin-bottom: 2px; }
+.tpl-formal .uni-session { font-size: calc(12px * var(--font-scale-session, 1)); color: #718096; font-style: italic; }
+
+.tpl-formal .assign-box {
+  width: 100%;
+  border-width: 2px;
+  border-style: double;
+  border-radius: 4px;
+  padding: 20px 24px;
+  margin: 16px 0;
+}
+
+.tpl-formal .assign-type { font-size: calc(13px * var(--font-scale-assignment-type, 1)); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+.tpl-formal .assign-title { font-size: calc(26px * var(--font-scale-assignment-title, 1)); font-weight: 700; line-height: 1.3; color: #1A202C; margin-bottom: 10px; }
+.tpl-formal .course-info { font-size: 14px; color: #4A5568; margin-bottom: 3px; }
+.tpl-formal .semester-info { font-size: calc(13px * var(--font-scale-semester, 1)); color: #718096; }
+
+/* Elegant Professional */
+.tpl-elegant {
+  align-items: center;
+  text-align: center;
+}
+
+.tpl-elegant .top-band {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 10px;
+}
+
+.tpl-elegant .bottom-band {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tpl-elegant .bottom-band-text {
+  color: white;
+  font-size: calc(13px * var(--font-scale-submission-date, 1));
+  font-weight: 600;
+}
+
+.tpl-elegant .elegant-by-to-label.submitted-by-heading { font-size: calc(13px * var(--font-scale-submitted-by-heading, 1)); font-weight: 700; }
+.tpl-elegant .elegant-by-to-label.submitted-to-heading { font-size: calc(13px * var(--font-scale-submitted-to-heading, 1)); font-weight: 700; }
+
+.tpl-elegant .uni-name { font-size: calc(22px * var(--font-scale-university-name, 1)); font-weight: 700; margin-bottom: 6px; }
+.tpl-elegant .uni-dept { font-size: calc(14px * var(--font-scale-department, 1)); color: #4A5568; margin-bottom: 3px; }
+.tpl-elegant .uni-session { font-size: calc(12px * var(--font-scale-session, 1)); color: #718096; font-style: italic; }
+
+.tpl-elegant .thin-rule {
+  width: 60%;
+  height: 1px;
+  margin: 20px auto;
+  border: none;
+}
+
+.tpl-elegant .assign-type { font-size: calc(13px * var(--font-scale-assignment-type, 1)); font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+.tpl-elegant .assign-title { font-size: calc(28px * var(--font-scale-assignment-title, 1)); font-weight: 700; line-height: 1.3; color: #1A202C; margin-bottom: 12px; }
+.tpl-elegant .course-info { font-size: 14px; color: #4A5568; margin-bottom: 3px; }
+.tpl-elegant .semester-info { font-size: calc(13px * var(--font-scale-semester, 1)); color: #718096; }
+
+/* User-selected document text color; accent headings and text on color bands stay distinct. */
+.tpl-page .uni-dept,
+.tpl-page .uni-session,
+.tpl-page .assign-title,
+.tpl-page .course-info,
+.tpl-page .semester-info,
+.tpl-page .tpl-date-row,
+.tpl-page .tpl-person-name,
+.tpl-page .tpl-person-detail,
+.tpl-page .tpl-note {
+  color: var(--document-text-color, #1A202C);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Download Section
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.download-section {
+  padding: 0;
+}
+
+.download-btn-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.download-btn-main:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.download-btn-main:active:not(:disabled) { transform: translateY(0.5px); }
+
+.download-btn-main:disabled {
+  background: var(--color-action-disabled);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.download-btn-main:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.download-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.download-hint {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: 0.4rem;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 600px) {
+  .preview-toolbar { min-height: 44px; height: auto; gap: 0.3rem; padding: 0 0.5rem; }
+  .preview-toolbar-label { font-size: 0.6rem; }
+  .preview-page-type { display: none; }
+  .zoom-btn { width: 36px; height: 36px; }
+  .preview-scroll-area { min-height: 260px; padding: 0.5rem; justify-content: flex-start; }
+  .preview-empty { min-height: 260px; padding: 1.25rem 1rem; }
+}
