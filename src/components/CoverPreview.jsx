@@ -104,7 +104,10 @@ export default function CoverPreview({ formData, hasContent }) {
       </div>
 
       {/* Scroll area */}
-      <div className="preview-scroll-area" ref={scrollRef}>
+      <div
+        className={`preview-scroll-area${hasContent ? '' : ' preview-scroll-area--empty'}`}
+        ref={scrollRef}
+      >
         {hasContent ? (
           <div
             className="a4-frame"

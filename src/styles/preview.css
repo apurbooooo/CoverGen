@@ -127,6 +127,15 @@
   line-height: 1.5;
 }
 
+.preview-scroll-area.preview-scroll-area--empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-scroll-area--empty .preview-empty {
+  width: 100%;
+}
+
 
 /* ── Zoom Controls ── */
 
