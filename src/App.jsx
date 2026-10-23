@@ -175,7 +175,7 @@ export default function App() {
       {showMobilePreviewHint && (
         <div className="mobile-preview-hint" role="status" aria-live="polite">
           <ArrowDown className="mobile-preview-hint-icon" size={16} aria-hidden="true" />
-          <span>Preview দেখতে নিচে স্ক্রল করুন</span>
+          <span>Scroll down to see the preview</span>
           <button
             className="mobile-preview-hint-dismiss"
             type="button"
