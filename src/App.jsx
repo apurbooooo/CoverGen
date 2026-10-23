@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { ArrowDown, X } from 'lucide-react';
 import { initialFormData } from './data/initialFormData.js';
 import { revokeImageUrl } from './utils/imageUtils.js';
 import Header from './components/Header.jsx';
@@ -25,6 +26,10 @@ export default function App() {
   const [formData, setFormData] = useState(initialFormData);
   const [showErrors, setShowErrors] = useState(false);
   const [appearance, setAppearance] = useState(getInitialAppearance);
+  const [showMobilePreviewHint, setShowMobilePreviewHint] = useState(
+    () => window.matchMedia('(max-width: 600px)').matches
+  );
+  const previewSectionRef = useRef(null);
   const { addToast } = useToast();
 
   useEffect(() => {
@@ -33,6 +38,26 @@ export default function App() {
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     themeColorMeta?.setAttribute('content', appearance === 'dark' ? '#1A1816' : '#F7F6F3');
   }, [appearance]);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 600px)');
+    const handleViewportChange = (event) => setShowMobilePreviewHint(event.matches);
+    mobileQuery.addEventListener('change', handleViewportChange);
+
+    if (!window.IntersectionObserver || !previewSectionRef.current) {
+      return () => mobileQuery.removeEventListener('change', handleViewportChange);
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setShowMobilePreviewHint(false);
+    }, { threshold: 0.2 });
+    observer.observe(previewSectionRef.current);
+
+    return () => {
+      observer.disconnect();
+      mobileQuery.removeEventListener('change', handleViewportChange);
+    };
+  }, []);
 
   const handleAppearanceToggle = useCallback(() => {
     setAppearance((current) => {
@@ -115,7 +140,11 @@ export default function App() {
             />
           </section>
 
-          <aside className="workspace-preview" aria-label="Cover page preview and export">
+          <aside
+            className="workspace-preview"
+            aria-label="Cover page preview and export"
+            ref={previewSectionRef}
+          >
             <CoverPreview
               formData={formData}
               hasContent={hasContent}
@@ -142,6 +171,21 @@ export default function App() {
           </aside>
         </div>
       </main>
+
+      {showMobilePreviewHint && (
+        <div className="mobile-preview-hint" role="status" aria-live="polite">
+          <ArrowDown className="mobile-preview-hint-icon" size={16} aria-hidden="true" />
+          <span>Preview দেখতে নিচে স্ক্রল করুন</span>
+          <button
+            className="mobile-preview-hint-dismiss"
+            type="button"
+            aria-label="Dismiss preview tip"
+            onClick={() => setShowMobilePreviewHint(false)}
+          >
+            <X size={15} aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       <Footer />
     </div>
