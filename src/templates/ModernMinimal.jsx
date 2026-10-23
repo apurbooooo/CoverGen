@@ -1,5 +1,6 @@
 import { getLogoPreviewSize } from '../utils/imageUtils.js';
 import { getFontScaleStyles } from '../utils/fontSizes.js';
+import { getCssFontFamily } from '../utils/fontFamily.js';
 
 function fmt(dateStr) {
   if (!dateStr) return '';
@@ -21,7 +22,7 @@ export default function ModernMinimal({ formData }) {
   return (
     <div
       className="tpl-page tpl-modern"
-      style={{ fontFamily: `'${fontFamily}', sans-serif`, position: 'relative', '--document-text-color': formData.textColor || '#1A202C' }}
+      style={{ fontFamily: getCssFontFamily(fontFamily, 'sans-serif'), position: 'relative', '--document-text-color': formData.textColor || '#1A202C' }}
     >
       {/* Left sidebar bar */}
       <div

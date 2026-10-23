@@ -100,6 +100,48 @@
   line-height: 1.4;
 }
 
+.font-upload-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.font-upload-control > label {
+  margin-bottom: 0;
+}
+
+.font-upload-control input[type='file'] {
+  min-height: 38px;
+  padding: 0.35rem;
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+}
+
+.font-upload-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--color-success);
+  font-size: 0.7rem;
+}
+
+.font-upload-status span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.font-upload-status button {
+  flex: 0 0 auto;
+  padding: 0.15rem 0.35rem;
+  border: 0;
+  background: transparent;
+  color: var(--color-error);
+  cursor: pointer;
+  font-size: inherit;
+}
+
 .required-star { margin-left: 0.12rem; color: var(--color-error); }
 
 

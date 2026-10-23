@@ -1,5 +1,6 @@
 import { getLogoPreviewSize } from '../utils/imageUtils.js';
 import { getFontScaleStyles } from '../utils/fontSizes.js';
+import { getCssFontFamily } from '../utils/fontFamily.js';
 
 function fmt(dateStr) {
   if (!dateStr) return '';
@@ -21,7 +22,7 @@ export default function FormalUniversity({ formData }) {
   return (
     <div
       className="tpl-page tpl-formal"
-      style={{ fontFamily: `'${fontFamily}', serif`, '--document-text-color': formData.textColor || '#1A202C' }}
+      style={{ fontFamily: getCssFontFamily(fontFamily, 'serif'), '--document-text-color': formData.textColor || '#1A202C' }}
     >
       {/* Logo */}
       {universityLogoPreview && (

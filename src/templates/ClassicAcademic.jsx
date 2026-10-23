@@ -1,5 +1,6 @@
 import { getLogoPreviewSize } from '../utils/imageUtils.js';
 import { getFontScaleStyles } from '../utils/fontSizes.js';
+import { getCssFontFamily } from '../utils/fontFamily.js';
 
 /**
  * Formats a date string as "Month DD, YYYY".
@@ -24,7 +25,7 @@ export default function ClassicAcademic({ formData }) {
   return (
     <div
       className="tpl-page tpl-classic"
-      style={{ fontFamily: `'${fontFamily}', serif`, '--document-text-color': formData.textColor || '#1A202C' }}
+      style={{ fontFamily: getCssFontFamily(fontFamily, 'serif'), '--document-text-color': formData.textColor || '#1A202C' }}
     >
       {/* University Logo */}
       {universityLogoPreview && (

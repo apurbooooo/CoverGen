@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Plus, Minus, Trash2, AlertCircle } from 'lucide-react';
 import FormSection from './FormSection.jsx';
 import LogoUploader from './LogoUploader.jsx';
@@ -10,6 +10,7 @@ import { universities } from '../data/universities.js';
 import { revokeImageUrl } from '../utils/imageUtils.js';
 import { validateForm } from '../utils/validateForm.js';
 import { DEFAULT_FONT_SIZES, DEFAULT_STUDENT_FONT_SIZES, normalizeFontScale } from '../utils/fontSizes.js';
+import { getImportedFontFamily, validateFontFile } from '../utils/fontFamily.js';
 
 /**
  * Renders a single form field with label, input/select/textarea, and error message.
@@ -77,8 +78,9 @@ function FontSizeStepper({ label, value, onChange }) {
 /**
  * Main form component. Manages all form input rendering and calls onChange for every change.
  */
-export default function CoverForm({ formData, onChange, showErrors }) {
+export default function CoverForm({ formData, onChange, showErrors, customFontLoading = false, customFontLoadError = '' }) {
   const errors = showErrors ? validateForm(formData) : {};
+  const [fontUploadError, setFontUploadError] = useState('');
   const universityRequestRef = useRef(0);
   const selectedCatalogPreviewRef = useRef('');
   const latestFormDataRef = useRef(formData);
@@ -90,6 +92,40 @@ export default function CoverForm({ formData, onChange, showErrors }) {
   const updateField = useCallback((key, value) => {
     onChange({ [key]: value });
   }, [onChange]);
+
+  function handleFontUpload(event) {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    const error = validateFontFile(file);
+    if (error) {
+      setFontUploadError(error);
+      return;
+    }
+
+    const fontUrl = URL.createObjectURL(file);
+    const customFontFamily = getImportedFontFamily(file.name);
+    onChange({
+      customFontUrl: fontUrl,
+      customFontName: file.name,
+      customFontFamily,
+      fontFamily: customFontFamily,
+    });
+    setFontUploadError('');
+  }
+
+  function removeImportedFont() {
+    onChange({
+      customFontUrl: '',
+      customFontName: '',
+      customFontFamily: '',
+      fontFamily: formData.fontFamily === formData.customFontFamily
+        ? fontFamilyOptions[0].value
+        : formData.fontFamily,
+    });
+    setFontUploadError('');
+  }
 
   function updateFontSize(key, value) {
     updateField('fontSizes', {
@@ -632,8 +668,42 @@ export default function CoverForm({ formData, onChange, showErrors }) {
             {fontFamilyOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
             ))}
+            {formData.customFontUrl && formData.customFontFamily && (
+              <option value={formData.customFontFamily}>
+                Imported: {formData.customFontName || 'Custom font'}
+              </option>
+            )}
           </select>
         </Field>
+
+        <div className="font-upload-control">
+          <label htmlFor="custom-font-upload">Import your own font</label>
+          <input
+            id="custom-font-upload"
+            type="file"
+            accept=".woff2,.woff,.ttf,.otf,font/woff2,font/woff,font/ttf,font/otf"
+            onChange={handleFontUpload}
+            aria-describedby="custom-font-hint"
+          />
+          <div id="custom-font-hint" className="field-hint">
+            WOFF2, WOFF, TTF, and OTF files up to 20 MB. The uploaded font is used in the preview and PDF; DOCX stores the font name and does not embed the font file.
+          </div>
+          {customFontLoading && (
+            <div className="field-hint" role="status">Loading imported font…</div>
+          )}
+          {formData.customFontName && (
+            <div className="font-upload-status">
+              <span title={formData.customFontName}>Using {formData.customFontName}</span>
+              <button type="button" onClick={removeImportedFont}>Remove</button>
+            </div>
+          )}
+          {(fontUploadError || customFontLoadError) && (
+            <div className="field-error" role="alert">
+              <AlertCircle size={12} aria-hidden="true" />
+              {fontUploadError || customFontLoadError}
+            </div>
+          )}
+        </div>
 
       </FormSection>
 

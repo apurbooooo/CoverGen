@@ -9,7 +9,7 @@ const presetTextColors = [
 ];
 
 export default function TextColorSelector({ textColor, onChange }) {
-  const normalizedColor = textColor.toUpperCase();
+  const normalizedColor = (textColor || '#1A202C').toUpperCase();
   const isPreset = presetTextColors.some((color) => color.value.toUpperCase() === normalizedColor);
 
   return (
@@ -37,7 +37,7 @@ export default function TextColorSelector({ textColor, onChange }) {
       <div className="color-input-row" style={{ marginTop: '0.875rem' }}>
         <input
           type="color"
-          value={textColor}
+          value={normalizedColor}
           onChange={(event) => onChange(event.target.value)}
           className="color-picker-native"
           id="document-text-color"

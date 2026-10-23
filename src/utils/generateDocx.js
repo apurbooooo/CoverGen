@@ -183,7 +183,7 @@ async function buildClassicTemplate(formData, font, themeColor) {
   children.push(new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { before: 80, after: 60 },
-    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: tc })],
+    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: textColor })],
   }));
 
   // Department
@@ -202,7 +202,7 @@ async function buildClassicTemplate(formData, font, themeColor) {
 
   // Assignment Type
   if (formData.assignmentType) {
-    children.push(centeredText(formData.assignmentType.toUpperCase(), { font, size: scaledSize('assignmentType', 22), bold: true, color: tc, spacing: { before: 60, after: 120 } }));
+    children.push(centeredText(formData.assignmentType.toUpperCase(), { font, size: scaledSize('assignmentType', 22), bold: true, color: textColor, spacing: { before: 60, after: 120 } }));
   }
 
   // Assignment Title
@@ -236,7 +236,7 @@ async function buildClassicTemplate(formData, font, themeColor) {
 
   // Submitted By header
   leftCells.push(new Paragraph({
-    children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 26), bold: true, color: tc })],
+    children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 26), bold: true, color: textColor })],
     spacing: { before: 0, after: 120 },
   }));
   formData.students.forEach((s) => {
@@ -250,7 +250,7 @@ async function buildClassicTemplate(formData, font, themeColor) {
 
   // Submitted To header
   rightCells.push(new Paragraph({
-    children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 26), bold: true, color: tc })],
+    children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 26), bold: true, color: textColor })],
     spacing: { before: 0, after: 120 },
   }));
   rightCells.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor }));
@@ -308,7 +308,7 @@ async function buildModernTemplate(formData, font, themeColor) {
   contentChildren.push(new Paragraph({
     alignment: AlignmentType.LEFT,
     spacing: { before: 0, after: 80 },
-    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 30), bold: true, color: tc })],
+    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 30), bold: true, color: textColor })],
   }));
 
   if (formData.department) {
@@ -333,7 +333,7 @@ async function buildModernTemplate(formData, font, themeColor) {
     contentChildren.push(new Paragraph({
       alignment: AlignmentType.LEFT,
       spacing: { before: 0, after: 100 },
-      children: [new TextRun({ text: formData.assignmentType, font, size: scaledSize('assignmentType', 20), bold: true, color: tc })],
+      children: [new TextRun({ text: formData.assignmentType, font, size: scaledSize('assignmentType', 20), bold: true, color: textColor })],
     }));
   }
 
@@ -362,7 +362,7 @@ async function buildModernTemplate(formData, font, themeColor) {
   contentChildren.push(spacer(200));
 
   // Students
-  contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED BY', font, size: scaledSize('submittedByHeading', 18), bold: true, color: tc, allCaps: true })], spacing: { before: 0, after: 120 } }));
+  contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED BY', font, size: scaledSize('submittedByHeading', 18), bold: true, color: textColor, allCaps: true })], spacing: { before: 0, after: 120 } }));
   formData.students.forEach((s) => {
     if (!s.name) return;
     contentChildren.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
@@ -373,7 +373,7 @@ async function buildModernTemplate(formData, font, themeColor) {
   });
 
   contentChildren.push(spacer(120));
-  contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED TO', font, size: scaledSize('submittedToHeading', 18), bold: true, color: tc, allCaps: true })], spacing: { before: 0, after: 120 } }));
+  contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED TO', font, size: scaledSize('submittedToHeading', 18), bold: true, color: textColor, allCaps: true })], spacing: { before: 0, after: 120 } }));
   contentChildren.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
   if (formData.teacherDesignation) contentChildren.push(leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } }));
   if (formData.teacherDepartment) contentChildren.push(leftText(`Department of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } }));
@@ -442,7 +442,7 @@ async function buildFormalTemplate(formData, font, themeColor) {
           new TableCell({
             margins: { top: 200, bottom: 200, left: 300, right: 300 },
             children: [
-              ...(formData.assignmentType ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.assignmentType, font, size: scaledSize('assignmentType', 22), bold: true, color: tc })], spacing: { before: 0, after: 120 } })] : []),
+              ...(formData.assignmentType ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.assignmentType, font, size: scaledSize('assignmentType', 22), bold: true, color: textColor })], spacing: { before: 0, after: 120 } })] : []),
               new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 36), bold: true, color: textColor })], spacing: { before: 0, after: 120 } }),
               ...(formData.courseName || formData.courseCode ? [new Paragraph({ alignment: AlignmentType.CENTER, children: courseRuns(formData, font, textColor, ' | ', 22), spacing: { before: 0, after: 60 } })] : []),
               ...(formData.semester ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.semester, font, size: scaledSize('semester', 20), color: textColor })], spacing: { before: 0, after: 0 } })] : []),
@@ -457,7 +457,7 @@ async function buildFormalTemplate(formData, font, themeColor) {
 
   // Two-column table for submitted by/to
   const leftCells = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 24), bold: true, color: tc })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }),
+    new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 24), bold: true, color: textColor })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }),
   ];
   formData.students.forEach((s) => {
     if (!s.name) return;
@@ -467,7 +467,7 @@ async function buildFormalTemplate(formData, font, themeColor) {
   });
 
   const rightCells = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 24), bold: true, color: tc })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }),
+    new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 24), bold: true, color: textColor })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }),
     leftText(formData.teacherName, { font, size: scaledSize('teacherName', 22), bold: true, color: textColor, spacing: { before: 80, after: 40 } }),
     ...(formData.teacherDesignation ? [leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),
     ...(formData.teacherDepartment ? [leftText(`Dept. of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),
@@ -522,7 +522,7 @@ async function buildElegantTemplate(formData, font, themeColor) {
   children.push(new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { before: 0, after: 60 },
-    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: tc })],
+    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: textColor })],
   }));
 
   if (formData.department) {
@@ -540,7 +540,7 @@ async function buildElegantTemplate(formData, font, themeColor) {
 
   // Assignment block
   if (formData.assignmentType) {
-    children.push(centeredText(formData.assignmentType, { font, size: scaledSize('assignmentType', 22), bold: true, color: tc, spacing: { before: 0, after: 80 } }));
+    children.push(centeredText(formData.assignmentType, { font, size: scaledSize('assignmentType', 22), bold: true, color: textColor, spacing: { before: 0, after: 80 } }));
   }
 
   children.push(new Paragraph({
@@ -568,7 +568,7 @@ async function buildElegantTemplate(formData, font, themeColor) {
 
   // Submitted by / to
   const leftParas = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 22), bold: true, color: tc })], spacing: { before: 0, after: 160 } }),
+    new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 22), bold: true, color: textColor })], spacing: { before: 0, after: 160 } }),
   ];
   formData.students.forEach((s) => {
     if (!s.name) return;
@@ -580,7 +580,7 @@ async function buildElegantTemplate(formData, font, themeColor) {
   });
 
   const rightParas = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 22), bold: true, color: tc })], spacing: { before: 0, after: 160 } }),
+    new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 22), bold: true, color: textColor })], spacing: { before: 0, after: 160 } }),
     leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }),
     ...(formData.teacherDesignation ? [leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),
     ...(formData.teacherDepartment ? [leftText(`Department of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),

@@ -21,7 +21,7 @@ export function sanitizeFilename(name) {
  * Builds a meaningful filename for the generated DOCX.
  * Example: "Digital_Logic_Design_Cover_Page.docx"
  */
-export function buildDocxFilename(formData) {
+function buildCoverPageFilename(formData, extension) {
   const parts = [];
 
   if (formData.courseName) {
@@ -32,5 +32,15 @@ export function buildDocxFilename(formData) {
 
   parts.push('Cover_Page');
 
-  return parts.join('_') + '.docx';
+  return `${parts.join('_')}.${extension}`;
+}
+
+/** Builds a meaningful filename for the generated DOCX. */
+export function buildDocxFilename(formData) {
+  return buildCoverPageFilename(formData, 'docx');
+}
+
+/** Builds a meaningful filename for the generated PDF. */
+export function buildPdfFilename(formData) {
+  return buildCoverPageFilename(formData, 'pdf');
 }
