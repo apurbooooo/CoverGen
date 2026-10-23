@@ -32,6 +32,7 @@ import { saveAs } from 'file-saver';
 import { buildDocxFilename } from './sanitizeFilename.js';
 import { fileToArrayBuffer, getLogoDocxDimensions } from './imageUtils.js';
 import { getScaledDocxFontSize } from './fontSizes.js';
+import { hasStudentDetails, hasTeacherDetails } from './coverContent.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -171,6 +172,8 @@ async function buildClassicTemplate(formData, font, themeColor) {
   const textColor = hexToDocx(formData.textColor || '#1A202C');
   const logoRun = await buildLogoImageRun(formData);
   const children = [];
+  const hasStudents = formData.students.some(hasStudentDetails);
+  const hasTeacher = hasTeacherDetails(formData);
 
   // Logo
   if (logoRun) {
@@ -180,11 +183,13 @@ async function buildClassicTemplate(formData, font, themeColor) {
   }
 
   // University Name
-  children.push(new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 80, after: 60 },
-    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: textColor })],
-  }));
+  if (formData.universityName) {
+    children.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 80, after: 60 },
+      children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: textColor })],
+    }));
+  }
 
   // Department
   if (formData.department) {
@@ -206,11 +211,13 @@ async function buildClassicTemplate(formData, font, themeColor) {
   }
 
   // Assignment Title
-  children.push(new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 60, after: 160 },
-    children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 40), bold: true, color: textColor })],
-  }));
+  if (formData.assignmentTitle) {
+    children.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 60, after: 160 },
+      children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 40), bold: true, color: textColor })],
+    }));
+  }
 
   // Course
   if (formData.courseName || formData.courseCode) {
@@ -235,13 +242,13 @@ async function buildClassicTemplate(formData, font, themeColor) {
   const rightCells = [];
 
   // Submitted By header
-  leftCells.push(new Paragraph({
+  if (hasStudents) leftCells.push(new Paragraph({
     children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 26), bold: true, color: textColor })],
     spacing: { before: 0, after: 120 },
   }));
   formData.students.forEach((s) => {
-    if (!s.name) return;
-    leftCells.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor }));
+    if (!hasStudentDetails(s)) return;
+    if (s.name) leftCells.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor }));
     if (s.studentId) leftCells.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor }));
     if (s.sessionYear) leftCells.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor }));
     if (s.department) leftCells.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor }));
@@ -249,35 +256,37 @@ async function buildClassicTemplate(formData, font, themeColor) {
   });
 
   // Submitted To header
-  rightCells.push(new Paragraph({
+  if (hasTeacher) rightCells.push(new Paragraph({
     children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 26), bold: true, color: textColor })],
     spacing: { before: 0, after: 120 },
   }));
-  rightCells.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor }));
+  if (formData.teacherName) rightCells.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor }));
   if (formData.teacherDesignation) rightCells.push(leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor }));
   if (formData.teacherDepartment) rightCells.push(leftText(`Dept. of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor }));
 
-  const twoColTable = new Table({
+  const twoColTable = hasStudents || hasTeacher ? new Table({
     layout: TableLayoutType.FIXED,
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideH: { style: BorderStyle.NONE }, insideV: { style: BorderStyle.NONE } },
     rows: [
       new TableRow({
         children: [
-          new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: leftCells, verticalAlign: VerticalAlign.TOP }),
-          new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: rightCells, verticalAlign: VerticalAlign.TOP }),
+          new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: leftCells.length ? leftCells : [spacer(1)], verticalAlign: VerticalAlign.TOP }),
+          new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: rightCells.length ? rightCells : [spacer(1)], verticalAlign: VerticalAlign.TOP }),
         ],
       }),
     ],
-  });
-  children.push(twoColTable);
+  }) : null;
+  if (twoColTable) children.push(twoColTable);
 
   children.push(spacer(200));
   children.push(hrLine(tc));
   children.push(spacer(100));
 
   // Date
-  children.push(centeredText(`Date of Submission: ${formatDate(formData.submissionDate)}`, { font, size: scaledSize('submissionDate', 20), color: textColor }));
+  if (formData.submissionDate) {
+    children.push(centeredText(`Date of Submission: ${formatDate(formData.submissionDate)}`, { font, size: scaledSize('submissionDate', 20), color: textColor }));
+  }
 
   // Additional Note
   if (formData.additionalNote) {
@@ -297,6 +306,8 @@ async function buildModernTemplate(formData, font, themeColor) {
   const textColor = hexToDocx(formData.textColor || '#1A202C');
   const logoRun = await buildLogoImageRun(formData);
   const contentChildren = [];
+  const hasStudents = formData.students.some(hasStudentDetails);
+  const hasTeacher = hasTeacherDetails(formData);
 
   // Header area
   contentChildren.push(spacer(300));
@@ -305,11 +316,13 @@ async function buildModernTemplate(formData, font, themeColor) {
     contentChildren.push(new Paragraph({ alignment: AlignmentType.LEFT, spacing: { before: 0, after: 200 }, children: [logoRun] }));
   }
 
-  contentChildren.push(new Paragraph({
-    alignment: AlignmentType.LEFT,
-    spacing: { before: 0, after: 80 },
-    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 30), bold: true, color: textColor })],
-  }));
+  if (formData.universityName) {
+    contentChildren.push(new Paragraph({
+      alignment: AlignmentType.LEFT,
+      spacing: { before: 0, after: 80 },
+      children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 30), bold: true, color: textColor })],
+    }));
+  }
 
   if (formData.department) {
     contentChildren.push(new Paragraph({
@@ -337,11 +350,13 @@ async function buildModernTemplate(formData, font, themeColor) {
     }));
   }
 
-  contentChildren.push(new Paragraph({
-    alignment: AlignmentType.LEFT,
-    spacing: { before: 0, after: 160 },
-    children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 44), bold: true, color: textColor })],
-  }));
+  if (formData.assignmentTitle) {
+    contentChildren.push(new Paragraph({
+      alignment: AlignmentType.LEFT,
+      spacing: { before: 0, after: 160 },
+      children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 44), bold: true, color: textColor })],
+    }));
+  }
 
   if (formData.courseName || formData.courseCode) {
     contentChildren.push(new Paragraph({
@@ -362,24 +377,28 @@ async function buildModernTemplate(formData, font, themeColor) {
   contentChildren.push(spacer(200));
 
   // Students
-  contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED BY', font, size: scaledSize('submittedByHeading', 18), bold: true, color: textColor, allCaps: true })], spacing: { before: 0, after: 120 } }));
+  if (hasStudents) contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED BY', font, size: scaledSize('submittedByHeading', 18), bold: true, color: textColor, allCaps: true })], spacing: { before: 0, after: 120 } }));
   formData.students.forEach((s) => {
-    if (!s.name) return;
-    contentChildren.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
+    if (!hasStudentDetails(s)) return;
+    if (s.name) contentChildren.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
     if (s.studentId) contentChildren.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.sessionYear) contentChildren.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.department) contentChildren.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     contentChildren.push(spacer(80));
   });
 
-  contentChildren.push(spacer(120));
-  contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED TO', font, size: scaledSize('submittedToHeading', 18), bold: true, color: textColor, allCaps: true })], spacing: { before: 0, after: 120 } }));
-  contentChildren.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
+  if (hasTeacher) {
+    contentChildren.push(spacer(120));
+    contentChildren.push(new Paragraph({ children: [new TextRun({ text: 'SUBMITTED TO', font, size: scaledSize('submittedToHeading', 18), bold: true, color: textColor, allCaps: true })], spacing: { before: 0, after: 120 } }));
+  }
+  if (formData.teacherName) contentChildren.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
   if (formData.teacherDesignation) contentChildren.push(leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } }));
   if (formData.teacherDepartment) contentChildren.push(leftText(`Department of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } }));
 
-  contentChildren.push(spacer(200));
-  contentChildren.push(new Paragraph({ children: [new TextRun({ text: formatDate(formData.submissionDate), font, size: scaledSize('submissionDate', 20), color: textColor })] }));
+  if (formData.submissionDate) {
+    contentChildren.push(spacer(200));
+    contentChildren.push(new Paragraph({ children: [new TextRun({ text: formatDate(formData.submissionDate), font, size: scaledSize('submissionDate', 20), color: textColor })] }));
+  }
 
   if (formData.additionalNote) {
     contentChildren.push(spacer(100));
@@ -398,6 +417,9 @@ async function buildFormalTemplate(formData, font, themeColor) {
   const textColor = hexToDocx(formData.textColor || '#1A202C');
   const logoRun = await buildLogoImageRun(formData);
   const children = [];
+  const hasStudents = formData.students.some(hasStudentDetails);
+  const hasTeacher = hasTeacherDetails(formData);
+  const hasAssignment = Boolean(formData.assignmentType || formData.assignmentTitle || formData.courseName || formData.courseCode || formData.semester);
 
   // Header box
   children.push(spacer(100));
@@ -409,13 +431,15 @@ async function buildFormalTemplate(formData, font, themeColor) {
   }
 
   // University in a shaded block
-  const uniPara = new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 160, after: 160 },
-    shading: { type: ShadingType.CLEAR, fill: tc },
-    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 32), bold: true, color: 'FFFFFF' })],
-  });
-  children.push(uniPara);
+  if (formData.universityName) {
+    const uniPara = new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 160, after: 160 },
+      shading: { type: ShadingType.CLEAR, fill: tc },
+      children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 32), bold: true, color: 'FFFFFF' })],
+    });
+    children.push(uniPara);
+  }
 
   if (formData.department) {
     children.push(centeredText(`Department of ${formData.department}`, { font, size: scaledSize('department', 22), color: textColor, spacing: { before: 80, after: 40 } }));
@@ -427,7 +451,7 @@ async function buildFormalTemplate(formData, font, themeColor) {
   children.push(spacer(160));
 
   // Bordered box for assignment info
-  const assignBox = new Table({
+  const assignBox = hasAssignment ? new Table({
     layout: TableLayoutType.FIXED,
     width: { size: 90, type: WidthType.PERCENTAGE },
     borders: {
@@ -443,7 +467,7 @@ async function buildFormalTemplate(formData, font, themeColor) {
             margins: { top: 200, bottom: 200, left: 300, right: 300 },
             children: [
               ...(formData.assignmentType ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.assignmentType, font, size: scaledSize('assignmentType', 22), bold: true, color: textColor })], spacing: { before: 0, after: 120 } })] : []),
-              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 36), bold: true, color: textColor })], spacing: { before: 0, after: 120 } }),
+              ...(formData.assignmentTitle ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 36), bold: true, color: textColor })], spacing: { before: 0, after: 120 } })] : []),
               ...(formData.courseName || formData.courseCode ? [new Paragraph({ alignment: AlignmentType.CENTER, children: courseRuns(formData, font, textColor, ' | ', 22), spacing: { before: 0, after: 60 } })] : []),
               ...(formData.semester ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: formData.semester, font, size: scaledSize('semester', 20), color: textColor })], spacing: { before: 0, after: 0 } })] : []),
             ],
@@ -451,41 +475,42 @@ async function buildFormalTemplate(formData, font, themeColor) {
         ],
       }),
     ],
-  });
-  children.push(assignBox);
+  }) : null;
+  if (assignBox) children.push(assignBox);
   children.push(spacer(240));
 
   // Two-column table for submitted by/to
-  const leftCells = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 24), bold: true, color: textColor })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }),
-  ];
+  const leftCells = [];
+  if (hasStudents) leftCells.push(new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 24), bold: true, color: textColor })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }));
   formData.students.forEach((s) => {
-    if (!s.name) return;
-    leftCells.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 22), bold: true, color: textColor, spacing: { before: 80, after: 40 } }));
+    if (!hasStudentDetails(s)) return;
+    if (s.name) leftCells.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 22), bold: true, color: textColor, spacing: { before: 80, after: 40 } }));
     if (s.studentId) leftCells.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.sessionYear) leftCells.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor, spacing: { before: 0, after: 20 } }));
+    if (s.department) leftCells.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor, spacing: { before: 0, after: 20 } }));
   });
 
-  const rightCells = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 24), bold: true, color: textColor })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }),
-    leftText(formData.teacherName, { font, size: scaledSize('teacherName', 22), bold: true, color: textColor, spacing: { before: 80, after: 40 } }),
-    ...(formData.teacherDesignation ? [leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),
-    ...(formData.teacherDepartment ? [leftText(`Dept. of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),
-  ];
+  const rightCells = [];
+  if (hasTeacher) rightCells.push(new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 24), bold: true, color: textColor })], spacing: { before: 0, after: 120 }, border: { bottom: { style: BorderStyle.SINGLE, color: tc, size: 4 } } }));
+  if (formData.teacherName) rightCells.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 22), bold: true, color: textColor, spacing: { before: 80, after: 40 } }));
+  if (formData.teacherDesignation) rightCells.push(leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } }));
+  if (formData.teacherDepartment) rightCells.push(leftText(`Dept. of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } }));
 
-  children.push(new Table({
+  if (hasStudents || hasTeacher) children.push(new Table({
     layout: TableLayoutType.FIXED,
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideH: { style: BorderStyle.NONE }, insideV: { style: BorderStyle.NONE } },
     rows: [new TableRow({ children: [
-      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: leftCells, verticalAlign: VerticalAlign.TOP }),
-      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: rightCells, verticalAlign: VerticalAlign.TOP }),
+      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: leftCells.length ? leftCells : [spacer(1)], verticalAlign: VerticalAlign.TOP }),
+      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: rightCells.length ? rightCells : [spacer(1)], verticalAlign: VerticalAlign.TOP }),
     ]})],
   }));
 
   children.push(spacer(200));
   children.push(hrLine(tc));
-  children.push(centeredText(`Submission Date: ${formatDate(formData.submissionDate)}`, { font, size: scaledSize('submissionDate', 20), color: textColor }));
+  if (formData.submissionDate) {
+    children.push(centeredText(`Submission Date: ${formatDate(formData.submissionDate)}`, { font, size: scaledSize('submissionDate', 20), color: textColor }));
+  }
 
   if (formData.additionalNote) {
     children.push(spacer(80));
@@ -504,6 +529,8 @@ async function buildElegantTemplate(formData, font, themeColor) {
   const textColor = hexToDocx(formData.textColor || '#1A202C');
   const logoRun = await buildLogoImageRun(formData);
   const children = [];
+  const hasStudents = formData.students.some(hasStudentDetails);
+  const hasTeacher = hasTeacherDetails(formData);
 
   // Top decorative band
   children.push(new Paragraph({
@@ -519,11 +546,13 @@ async function buildElegantTemplate(formData, font, themeColor) {
   }
 
   // University
-  children.push(new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 0, after: 60 },
-    children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: textColor })],
-  }));
+  if (formData.universityName) {
+    children.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 0, after: 60 },
+      children: [new TextRun({ text: formData.universityName, font, size: scaledSize('universityName', 34), bold: true, color: textColor })],
+    }));
+  }
 
   if (formData.department) {
     children.push(centeredText(`Department of ${formData.department}`, { font, size: scaledSize('department', 22), color: textColor, spacing: { before: 0, after: 40 } }));
@@ -543,11 +572,13 @@ async function buildElegantTemplate(formData, font, themeColor) {
     children.push(centeredText(formData.assignmentType, { font, size: scaledSize('assignmentType', 22), bold: true, color: textColor, spacing: { before: 0, after: 80 } }));
   }
 
-  children.push(new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { before: 0, after: 160 },
-    children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 42), bold: true, color: textColor })],
-  }));
+  if (formData.assignmentTitle) {
+    children.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 0, after: 160 },
+      children: [new TextRun({ text: formData.assignmentTitle, font, size: scaledSize('assignmentTitle', 42), bold: true, color: textColor })],
+    }));
+  }
 
   if (formData.courseName || formData.courseCode) {
     children.push(new Paragraph({
@@ -567,32 +598,30 @@ async function buildElegantTemplate(formData, font, themeColor) {
   }));
 
   // Submitted by / to
-  const leftParas = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 22), bold: true, color: textColor })], spacing: { before: 0, after: 160 } }),
-  ];
+  const leftParas = [];
+  if (hasStudents) leftParas.push(new Paragraph({ children: [new TextRun({ text: 'Submitted By', font, size: scaledSize('submittedByHeading', 22), bold: true, color: textColor })], spacing: { before: 0, after: 160 } }));
   formData.students.forEach((s) => {
-    if (!s.name) return;
-    leftParas.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
+    if (!hasStudentDetails(s)) return;
+    if (s.name) leftParas.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
     if (s.studentId) leftParas.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.sessionYear) leftParas.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.department) leftParas.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     leftParas.push(spacer(60));
   });
 
-  const rightParas = [
-    new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 22), bold: true, color: textColor })], spacing: { before: 0, after: 160 } }),
-    leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }),
-    ...(formData.teacherDesignation ? [leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),
-    ...(formData.teacherDepartment ? [leftText(`Department of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } })] : []),
-  ];
+  const rightParas = [];
+  if (hasTeacher) rightParas.push(new Paragraph({ children: [new TextRun({ text: 'Submitted To', font, size: scaledSize('submittedToHeading', 22), bold: true, color: textColor })], spacing: { before: 0, after: 160 } }));
+  if (formData.teacherName) rightParas.push(leftText(formData.teacherName, { font, size: scaledSize('teacherName', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
+  if (formData.teacherDesignation) rightParas.push(leftText(formData.teacherDesignation, { font, size: scaledSize('teacherDesignation', 20), color: textColor, spacing: { before: 0, after: 20 } }));
+  if (formData.teacherDepartment) rightParas.push(leftText(`Department of ${formData.teacherDepartment}`, { font, size: scaledSize('teacherDepartment', 20), color: textColor, spacing: { before: 0, after: 20 } }));
 
-  children.push(new Table({
+  if (hasStudents || hasTeacher) children.push(new Table({
     layout: TableLayoutType.FIXED,
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideH: { style: BorderStyle.NONE }, insideV: { style: BorderStyle.NONE } },
     rows: [new TableRow({ children: [
-      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: leftParas, verticalAlign: VerticalAlign.TOP }),
-      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: rightParas, verticalAlign: VerticalAlign.TOP }),
+      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: leftParas.length ? leftParas : [spacer(1)], verticalAlign: VerticalAlign.TOP }),
+      new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: rightParas.length ? rightParas : [spacer(1)], verticalAlign: VerticalAlign.TOP }),
     ]})],
   }));
 
@@ -603,7 +632,9 @@ async function buildElegantTemplate(formData, font, themeColor) {
     shading: { type: ShadingType.CLEAR, fill: tc },
     alignment: AlignmentType.CENTER,
     spacing: { before: 80, after: 0 },
-    children: [new TextRun({ text: `  ${formatDate(formData.submissionDate)}  `, font, size: scaledSize('submissionDate', 22), color: 'FFFFFF', bold: true })],
+    children: formData.submissionDate
+      ? [new TextRun({ text: `  ${formatDate(formData.submissionDate)}  `, font, size: scaledSize('submissionDate', 22), color: 'FFFFFF', bold: true })]
+      : [],
   }));
 
   if (formData.additionalNote) {

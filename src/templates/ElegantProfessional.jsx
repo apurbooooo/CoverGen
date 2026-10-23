@@ -1,6 +1,7 @@
 import { getLogoPreviewSize } from '../utils/imageUtils.js';
 import { getFontScaleStyles } from '../utils/fontSizes.js';
 import { getCssFontFamily } from '../utils/fontFamily.js';
+import { hasStudentDetails, hasTeacherDetails } from '../utils/coverContent.js';
 
 function fmt(dateStr) {
   if (!dateStr) return '';
@@ -18,6 +19,8 @@ function fmt(dateStr) {
 export default function ElegantProfessional({ formData }) {
   const { themeColor, fontFamily, universityLogoPreview, logoSize } = formData;
   const logoSizePx = getLogoPreviewSize(logoSize);
+  const hasStudents = formData.students.some(hasStudentDetails);
+  const hasTeacher = hasTeacherDetails(formData);
 
   return (
     <div
@@ -72,10 +75,10 @@ export default function ElegantProfessional({ formData }) {
           <div className="assign-title">{formData.assignmentTitle}</div>
         )}
 
-        {formData.courseName && (
+        {(formData.courseName || formData.courseCode) && (
           <div className="course-info">
-            <span className="course-name">{formData.courseName}</span>
-            {formData.courseCode && <> · <span className="course-code">{formData.courseCode}</span></>}
+            {formData.courseName && <span className="course-name">{formData.courseName}</span>}
+            {formData.courseCode && <>{formData.courseName ? ' · ' : ''}<span className="course-code">{formData.courseCode}</span></>}
           </div>
         )}
 
@@ -87,40 +90,36 @@ export default function ElegantProfessional({ formData }) {
         <div style={{ width: '70%', height: 1, background: '#E2E8F0', margin: '20px auto' }} />
 
         {/* Submitted By / To */}
-        <div className="tpl-by-to" style={{ width: '100%' }}>
-          <div className="tpl-by-to-col">
+        {(hasStudents || hasTeacher) && <div className="tpl-by-to" style={{ width: '100%' }}>
+          {hasStudents && <div className="tpl-by-to-col">
             <div className="elegant-by-to-label submitted-by-heading" style={{ color: themeColor, marginBottom: 10 }}>
               Submitted By
             </div>
             {formData.students.map((s) =>
-              s.name ? (
+              hasStudentDetails(s) ? (
                 <div key={s.id} style={{ marginBottom: 8, ...getFontScaleStyles(s.fontSizes) }}>
-                  <div className="tpl-person-name student-name">{s.name}</div>
+                  {s.name && <div className="tpl-person-name student-name">{s.name}</div>}
                   {s.studentId && <div className="tpl-person-detail student-id">ID: {s.studentId}</div>}
                   {s.sessionYear && <div className="tpl-person-detail student-session-year">Session: {s.sessionYear}</div>}
                   {s.department && <div className="tpl-person-detail student-department">{s.department}</div>}
                 </div>
               ) : null
             )}
-          </div>
+          </div>}
 
-          <div className="tpl-by-to-col">
+          {hasTeacher && <div className="tpl-by-to-col">
             <div className="elegant-by-to-label submitted-to-heading" style={{ color: themeColor, marginBottom: 10 }}>
               Submitted To
             </div>
-            {formData.teacherName && (
-              <>
-                <div className="tpl-person-name teacher-name">{formData.teacherName}</div>
-                {formData.teacherDesignation && (
-                  <div className="tpl-person-detail teacher-designation">{formData.teacherDesignation}</div>
-                )}
-                {formData.teacherDepartment && (
-                  <div className="tpl-person-detail teacher-department">Department of {formData.teacherDepartment}</div>
-                )}
-              </>
+            {formData.teacherName && <div className="tpl-person-name teacher-name">{formData.teacherName}</div>}
+            {formData.teacherDesignation && (
+              <div className="tpl-person-detail teacher-designation">{formData.teacherDesignation}</div>
             )}
-          </div>
-        </div>
+            {formData.teacherDepartment && (
+              <div className="tpl-person-detail teacher-department">Department of {formData.teacherDepartment}</div>
+            )}
+          </div>}
+        </div>}
 
         {formData.additionalNote && (
           <div className="tpl-note" style={{ marginTop: 12 }}>{formData.additionalNote}</div>

@@ -15,13 +15,12 @@ import { getImportedFontFamily, validateFontFile } from '../utils/fontFamily.js'
 /**
  * Renders a single form field with label, input/select/textarea, and error message.
  */
-function Field({ id, label, required, error, fontSizeControl, children }) {
+function Field({ id, label, error, fontSizeControl, children }) {
   return (
     <div className="field-group">
       <div className="field-label-row">
         <label htmlFor={id}>
           {label}
-          {required && <span className="required-star" aria-hidden="true">*</span>}
         </label>
         {fontSizeControl}
       </div>
@@ -78,8 +77,8 @@ function FontSizeStepper({ label, value, onChange }) {
 /**
  * Main form component. Manages all form input rendering and calls onChange for every change.
  */
-export default function CoverForm({ formData, onChange, showErrors, customFontLoading = false, customFontLoadError = '' }) {
-  const errors = showErrors ? validateForm(formData) : {};
+export default function CoverForm({ formData, onChange, customFontLoading = false, customFontLoadError = '' }) {
+  const errors = validateForm(formData);
   const [fontUploadError, setFontUploadError] = useState('');
   const universityRequestRef = useRef(0);
   const selectedCatalogPreviewRef = useRef('');
@@ -258,7 +257,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
         <Field
           id="universityName"
           label="University Name"
-          required
           error={errors.universityName}
           fontSizeControl={fontSizeControl('University name', 'universityName')}
         >
@@ -271,7 +269,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
             placeholder="e.g. State University of Technology"
             className={errors.universityName ? 'error' : ''}
             aria-describedby={errors.universityName ? 'universityName-error universityName-hint' : 'universityName-hint'}
-            aria-required="true"
             maxLength={120}
           />
           <datalist id="university-suggestions">
@@ -292,7 +289,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
           <Field
             id="department"
             label="Department"
-            required
             error={errors.department}
             fontSizeControl={fontSizeControl('Department', 'department')}
           >
@@ -304,7 +300,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
               placeholder="e.g. Computer Science"
               className={errors.department ? 'error' : ''}
               aria-describedby={errors.department ? 'department-error' : undefined}
-              aria-required="true"
               maxLength={100}
             />
           </Field>
@@ -331,7 +326,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
         <Field
           id="assignmentTitle"
           label="Assignment Title"
-          required
           error={errors.assignmentTitle}
           fontSizeControl={fontSizeControl('Assignment title', 'assignmentTitle')}
         >
@@ -343,7 +337,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
             placeholder="e.g. Analysis of Digital Logic Circuits"
             className={errors.assignmentTitle ? 'error' : ''}
             aria-describedby={errors.assignmentTitle ? 'assignmentTitle-error' : undefined}
-            aria-required="true"
             maxLength={200}
           />
         </Field>
@@ -385,7 +378,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
           <Field
             id="courseName"
             label="Course Name"
-            required
             error={errors.courseName}
             fontSizeControl={fontSizeControl('Course name', 'courseName')}
           >
@@ -397,7 +389,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
               placeholder="e.g. Digital Logic Design"
               className={errors.courseName ? 'error' : ''}
               aria-describedby={errors.courseName ? 'courseName-error' : undefined}
-              aria-required="true"
               maxLength={120}
             />
           </Field>
@@ -447,7 +438,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
               <Field
                 id={`student-name-${idx}`}
                 label="Student Name"
-                required={idx === 0}
                 error={errors[`students.${idx}.name`]}
                 fontSizeControl={fontSizeControl(`Student ${idx + 1} name`, 'name', idx)}
               >
@@ -458,7 +448,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
                   onChange={(e) => updateStudent(idx, 'name', e.target.value)}
                   placeholder="Full name"
                   className={errors[`students.${idx}.name`] ? 'error' : ''}
-                  aria-required={idx === 0}
                   maxLength={100}
                 />
               </Field>
@@ -533,7 +522,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
         <Field
           id="teacherName"
           label="Instructor / Teacher Name"
-          required
           error={errors.teacherName}
           fontSizeControl={fontSizeControl('Instructor name', 'teacherName')}
         >
@@ -545,7 +533,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
             placeholder="e.g. Dr. Sarah Johnson"
             className={errors.teacherName ? 'error' : ''}
             aria-describedby={errors.teacherName ? 'teacherName-error' : undefined}
-            aria-required="true"
             maxLength={100}
           />
         </Field>
@@ -589,7 +576,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
           <Field
             id="submissionDate"
             label="Submission Date"
-            required
             error={errors.submissionDate}
             fontSizeControl={fontSizeControl('Submission date', 'submissionDate')}
           >
@@ -599,7 +585,6 @@ export default function CoverForm({ formData, onChange, showErrors, customFontLo
               value={formData.submissionDate}
               onChange={(e) => updateField('submissionDate', e.target.value)}
               className={errors.submissionDate ? 'error' : ''}
-              aria-required="true"
             />
           </Field>
         </div>

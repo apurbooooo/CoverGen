@@ -73,8 +73,8 @@
 .section-body {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 0 0.25rem 1rem;
+  gap: 1rem;
+  padding: 0.25rem 0.25rem 1.125rem;
 }
 
 
@@ -83,13 +83,22 @@
 .field-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  column-gap: 0.875rem;
+  row-gap: 1rem;
 }
 
 .field-group {
   display: flex;
   min-width: 0;
   flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-panel .field-group > input:not([type='color']):not([type='file']),
+.form-panel .field-group > select,
+.form-panel .field-group > textarea {
+  min-height: 42px;
+  padding: 0.6rem 0.75rem;
 }
 
 .field-hint {
@@ -103,7 +112,7 @@
 .font-upload-control {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.4rem;
 }
 
 .font-upload-control > label {
@@ -148,19 +157,19 @@
 /* ── Student Entries ── */
 
 .student-entry {
-  padding: 0.75rem 0 0.75rem 0.75rem;
+  padding: 0.9rem 0 1rem 1rem;
   border-left: 2px solid var(--color-accent);
   transition: border-color var(--transition-fast);
 }
 
-.student-entry + .student-entry { margin-top: 0.5rem; }
+.student-entry + .student-entry { margin-top: 0.75rem; }
 
 .student-entry-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
 .student-number {
@@ -250,29 +259,28 @@
   min-width: 0;
   align-items: center;
   justify-content: space-between;
-  gap: 0.3rem;
+  gap: 0.65rem;
 }
 
 .field-label-row > label {
   min-width: 0;
   flex: 1;
-  margin-bottom: 0.35rem;
-  line-height: 1.25;
+  margin-bottom: 0;
+  line-height: 1.4;
 }
 
 .font-size-stepper {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 0.08rem;
-  margin-bottom: 0.3rem;
+  gap: 0.16rem;
 }
 
 .font-size-step {
   display: grid;
-  width: 20px;
-  height: 20px;
-  min-height: 20px;
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
   place-items: center;
   padding: 0;
   border: 1px solid var(--color-border);
@@ -290,13 +298,13 @@
 .font-size-step:disabled { cursor: default; opacity: 0.4; }
 
 .font-size-value {
-  min-width: 2.25em;
+  min-width: 2.5em;
   padding: 0;
   border: 0;
   background: transparent;
   color: var(--color-text-muted);
   font-family: var(--font-mono);
-  font-size: 0.56rem;
+  font-size: 0.6rem;
   text-align: center;
 }
 
@@ -507,15 +515,16 @@
   .section-header-row { gap: 0.25rem; }
   .section-header { gap: 0.4rem; }
   .section-title { letter-spacing: 0.05em; }
-  .field-row { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
+  .field-row { grid-template-columns: minmax(0, 1fr); row-gap: 0.875rem; }
   .field-label-row { gap: 0.5rem; }
   .font-size-step { width: 34px; height: 34px; min-height: 34px; }
   .font-size-value { min-width: 2.75em; font-size: 0.65rem; }
+  .section-body { gap: 0.875rem; padding-bottom: 1rem; }
   .template-grid { gap: 0.4rem; }
   .template-card { padding: 0.3rem; }
   .template-desc { display: none; }
   .color-preset-btn { width: 36px; height: 36px; }
-  .student-entry { padding-left: 0.5rem; }
+  .student-entry { padding-left: 0.75rem; }
   .logo-preview-container { flex-wrap: wrap; }
   .logo-preview-info { flex-basis: calc(100% - 4.5rem); }
   .logo-preview-container > div:last-child { width: 100%; flex-direction: row !important; }

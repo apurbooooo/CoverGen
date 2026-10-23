@@ -2,20 +2,18 @@ import { useState } from 'react';
 import { Download, AlertCircle, FileDown } from 'lucide-react';
 import { generateAndDownloadDocx } from '../utils/generateDocx.js';
 import { buildPdfFilename } from '../utils/sanitizeFilename.js';
-import { isFormValid } from '../utils/validateForm.js';
 
 /**
- * Document export buttons with loading state, error handling, and validation guard.
+ * Document export buttons with loading state and error handling.
  */
 export default function DownloadButton({ formData, customFontLoading = false, onSuccess, onError }) {
   const [loadingFormat, setLoadingFormat] = useState('');
   const [genError, setGenError] = useState('');
 
-  const valid = isFormValid(formData);
   const loading = Boolean(loadingFormat);
 
   async function handleDownload() {
-    if (!valid || loading) return;
+    if (loading) return;
 
     setLoadingFormat('docx');
     setGenError('');
@@ -34,7 +32,7 @@ export default function DownloadButton({ formData, customFontLoading = false, on
   }
 
   function handlePdfDownload() {
-    if (!valid || loading) return;
+    if (loading) return;
 
     setGenError('');
     const originalTitle = document.title;
@@ -61,10 +59,10 @@ export default function DownloadButton({ formData, customFontLoading = false, on
           id="btn-download-docx"
           className="download-btn-main"
           onClick={handleDownload}
-          disabled={!valid || loading}
+          disabled={loading}
           aria-busy={loadingFormat === 'docx'}
           aria-label="Download cover page as Word document"
-          title={!valid ? 'Please fill in all required fields first' : 'Download editable Word (.docx) file'}
+          title="Download editable Word (.docx) file"
         >
           {loadingFormat === 'docx' ? (
             <>
@@ -83,29 +81,20 @@ export default function DownloadButton({ formData, customFontLoading = false, on
           id="btn-download-pdf"
           className="download-btn-main download-btn-pdf"
           onClick={handlePdfDownload}
-          disabled={!valid || loading || customFontLoading}
+          disabled={loading || customFontLoading}
           aria-label="Download cover page as PDF"
-          title={!valid
-            ? 'Please fill in all required fields first'
-            : customFontLoading
-              ? 'Wait for the imported font to finish loading'
-              : 'Open print dialog to save as PDF'}
+          title={customFontLoading
+            ? 'Wait for the imported font to finish loading'
+            : 'Open print dialog to save as PDF'}
         >
           <FileDown size={18} />
           Download PDF
         </button>
       </div>
 
-      {!valid && (
-        <div className="download-hint" style={{ color: 'var(--color-error)', marginTop: '0.5rem' }}>
-          <AlertCircle size={12} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
-          Fill in all required fields to enable download.
-        </div>
-      )}
-
-      {valid && !loading && (
+      {!loading && (
         <div className="download-hint">
-          DOCX is editable in Word and LibreOffice. For PDF, choose “Save as PDF” in the print dialog.
+          Enter only the details you need. DOCX is editable in Word and LibreOffice; for PDF, choose “Save as PDF” in the print dialog.
         </div>
       )}
 

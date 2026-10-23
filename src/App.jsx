@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { ArrowDown, X } from 'lucide-react';
 import { initialFormData } from './data/initialFormData.js';
 import { revokeImageUrl } from './utils/imageUtils.js';
+import { hasCoverContent } from './utils/coverContent.js';
 import Header from './components/Header.jsx';
 import CoverForm from './components/CoverForm.jsx';
 import CoverPreview from './components/CoverPreview.jsx';
@@ -24,7 +25,6 @@ function getInitialAppearance() {
 
 export default function App() {
   const [formData, setFormData] = useState(initialFormData);
-  const [showErrors, setShowErrors] = useState(false);
   const [appearance, setAppearance] = useState(getInitialAppearance);
   const [customFontLoading, setCustomFontLoading] = useState(false);
   const [customFontLoadError, setCustomFontLoadError] = useState('');
@@ -137,12 +137,7 @@ export default function App() {
   }, []);
 
   const handleReset = useCallback(() => {
-    const hasInput = !!(
-      formData.universityName ||
-      formData.assignmentTitle ||
-      formData.courseName ||
-      formData.students[0]?.name
-    );
+    const hasInput = hasCoverContent(formData) || Boolean(formData.customFontUrl);
 
     if (hasInput && !window.confirm('Reset all fields? Your changes will be lost.')) {
       return;
@@ -165,11 +160,10 @@ export default function App() {
           fontSizes: { ...initialFormData.students[0].fontSizes },
         }
       ],
-      submissionDate: new Date().toISOString().split('T')[0],
+      submissionDate: '',
     };
     formDataRef.current = resetFormData;
     setFormData(resetFormData);
-    setShowErrors(false);
     addToast({
       type: 'info',
       title: 'Form Reset',
@@ -177,14 +171,8 @@ export default function App() {
     });
   }, [formData, addToast]);
 
-  // Determine if there is enough content to show the live preview
-  const hasContent = Boolean(
-    formData.universityName.trim() ||
-    formData.assignmentTitle.trim() ||
-    formData.courseName.trim() ||
-    formData.students[0]?.name.trim() ||
-    formData.universityLogoPreview
-  );
+  // Show the selected template as soon as any cover content is provided.
+  const hasContent = hasCoverContent(formData);
 
   return (
     <div className="app-shell">
@@ -200,7 +188,6 @@ export default function App() {
             <CoverForm
               formData={formData}
               onChange={handleChange}
-              showErrors={showErrors}
               customFontLoading={customFontLoading}
               customFontLoadError={customFontLoadError}
             />
@@ -229,11 +216,10 @@ export default function App() {
                 });
               }}
               onError={(msg) => {
-                setShowErrors(true);
                 addToast({
                   type: 'error',
                   title: 'Export Failed',
-                  message: msg || 'Please fill in all required fields.',
+                  message: msg || 'The document could not be generated. Please try again.',
                 });
               }}
             />

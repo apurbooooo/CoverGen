@@ -2,10 +2,8 @@ import { DEFAULT_FONT_SIZES, DEFAULT_STUDENT_FONT_SIZES } from '../utils/fontSiz
 
 /**
  * Default form data structure used to initialize and reset the form.
- * All optional fields default to empty string; required fields are also empty to force user input.
+ * All cover content fields are optional and default to empty string.
  */
-
-const today = new Date().toISOString().split('T')[0];
 
 export const initialFormData = {
   // Section 1: University Information
@@ -40,7 +38,7 @@ export const initialFormData = {
   teacherDepartment: '',
 
   // Section 5: Submission Details
-  submissionDate: today,
+  submissionDate: '',
   additionalNote: '',
 
   // Section 6: Design Customization

@@ -1,6 +1,7 @@
 import { getLogoPreviewSize } from '../utils/imageUtils.js';
 import { getFontScaleStyles } from '../utils/fontSizes.js';
 import { getCssFontFamily } from '../utils/fontFamily.js';
+import { hasStudentDetails, hasTeacherDetails } from '../utils/coverContent.js';
 
 function fmt(dateStr) {
   if (!dateStr) return '';
@@ -18,6 +19,8 @@ function fmt(dateStr) {
 export default function ModernMinimal({ formData }) {
   const { themeColor, fontFamily, universityLogoPreview, logoSize } = formData;
   const logoSizePx = getLogoPreviewSize(logoSize);
+  const hasStudents = formData.students.some(hasStudentDetails);
+  const hasTeacher = hasTeacherDetails(formData);
 
   return (
     <div
@@ -74,10 +77,10 @@ export default function ModernMinimal({ formData }) {
         <div className="assign-title">{formData.assignmentTitle}</div>
       )}
 
-      {formData.courseName && (
+      {(formData.courseName || formData.courseCode) && (
         <div className="course-info">
-          <span className="course-name">{formData.courseName}</span>
-          {formData.courseCode && <> · <span className="course-code">{formData.courseCode}</span></>}
+          {formData.courseName && <span className="course-name">{formData.courseName}</span>}
+          {formData.courseCode && <>{formData.courseName ? ' · ' : ''}<span className="course-code">{formData.courseCode}</span></>}
         </div>
       )}
 
@@ -90,13 +93,13 @@ export default function ModernMinimal({ formData }) {
       <hr style={{ height: 1, background: '#CBD5E0', border: 'none', margin: '16px 0' }} />
 
       {/* Submitted By */}
-      {formData.students.some((s) => s.name) && (
+      {hasStudents && (
         <div style={{ marginBottom: 16 }}>
           <div className="by-to-label submitted-by-heading" style={{ color: themeColor }}>SUBMITTED BY</div>
           {formData.students.map((s) =>
-            s.name ? (
+            hasStudentDetails(s) ? (
               <div key={s.id} style={{ marginBottom: 8, ...getFontScaleStyles(s.fontSizes) }}>
-                <div className="tpl-person-name student-name">{s.name}</div>
+                {s.name && <div className="tpl-person-name student-name">{s.name}</div>}
                 {s.studentId && <div className="tpl-person-detail student-id">ID: {s.studentId}</div>}
                 {s.sessionYear && <div className="tpl-person-detail student-session-year">Session: {s.sessionYear}</div>}
                 {s.department && <div className="tpl-person-detail student-department">{s.department}</div>}
@@ -107,10 +110,10 @@ export default function ModernMinimal({ formData }) {
       )}
 
       {/* Submitted To */}
-      {formData.teacherName && (
+      {hasTeacher && (
         <div style={{ marginBottom: 16 }}>
           <div className="by-to-label submitted-to-heading" style={{ color: themeColor }}>SUBMITTED TO</div>
-          <div className="tpl-person-name teacher-name">{formData.teacherName}</div>
+          {formData.teacherName && <div className="tpl-person-name teacher-name">{formData.teacherName}</div>}
           {formData.teacherDesignation && (
             <div className="tpl-person-detail teacher-designation">{formData.teacherDesignation}</div>
           )}
