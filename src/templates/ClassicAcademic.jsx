@@ -99,6 +99,7 @@ export default function ClassicAcademic({ formData }) {
               <div key={s.id} style={{ marginBottom: 8, ...getFontScaleStyles(s.fontSizes) }}>
                 {s.name && <div className="tpl-person-name student-name">{s.name}</div>}
                 {s.studentId && <div className="tpl-person-detail student-id">ID: {s.studentId}</div>}
+                {s.classSection && <div className="tpl-person-detail student-class-section">Section: {s.classSection}</div>}
                 {s.sessionYear && <div className="tpl-person-detail student-session-year">Session: {s.sessionYear}</div>}
                 {s.department && <div className="tpl-person-detail student-department">{s.department}</div>}
               </div>

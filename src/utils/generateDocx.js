@@ -250,6 +250,7 @@ async function buildClassicTemplate(formData, font, themeColor) {
     if (!hasStudentDetails(s)) return;
     if (s.name) leftCells.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor }));
     if (s.studentId) leftCells.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor }));
+    if (s.classSection) leftCells.push(leftText(`Section: ${s.classSection}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'classSection', 20), color: textColor }));
     if (s.sessionYear) leftCells.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor }));
     if (s.department) leftCells.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor }));
     leftCells.push(spacer(60));
@@ -382,6 +383,7 @@ async function buildModernTemplate(formData, font, themeColor) {
     if (!hasStudentDetails(s)) return;
     if (s.name) contentChildren.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
     if (s.studentId) contentChildren.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor, spacing: { before: 0, after: 20 } }));
+    if (s.classSection) contentChildren.push(leftText(`Section: ${s.classSection}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'classSection', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.sessionYear) contentChildren.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.department) contentChildren.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     contentChildren.push(spacer(80));
@@ -486,6 +488,7 @@ async function buildFormalTemplate(formData, font, themeColor) {
     if (!hasStudentDetails(s)) return;
     if (s.name) leftCells.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 22), bold: true, color: textColor, spacing: { before: 80, after: 40 } }));
     if (s.studentId) leftCells.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor, spacing: { before: 0, after: 20 } }));
+    if (s.classSection) leftCells.push(leftText(`Section: ${s.classSection}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'classSection', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.sessionYear) leftCells.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.department) leftCells.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor, spacing: { before: 0, after: 20 } }));
   });
@@ -604,6 +607,7 @@ async function buildElegantTemplate(formData, font, themeColor) {
     if (!hasStudentDetails(s)) return;
     if (s.name) leftParas.push(leftText(s.name, { font, size: getScaledDocxFontSize(s.fontSizes, 'name', 24), bold: true, color: textColor, spacing: { before: 0, after: 40 } }));
     if (s.studentId) leftParas.push(leftText(`ID: ${s.studentId}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'studentId', 20), color: textColor, spacing: { before: 0, after: 20 } }));
+    if (s.classSection) leftParas.push(leftText(`Section: ${s.classSection}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'classSection', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.sessionYear) leftParas.push(leftText(`Session: ${s.sessionYear}`, { font, size: getScaledDocxFontSize(s.fontSizes, 'sessionYear', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     if (s.department) leftParas.push(leftText(s.department, { font, size: getScaledDocxFontSize(s.fontSizes, 'department', 20), color: textColor, spacing: { before: 0, after: 20 } }));
     leftParas.push(spacer(60));

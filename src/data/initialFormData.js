@@ -26,6 +26,7 @@ export const initialFormData = {
       id: crypto.randomUUID(),
       name: '',
       studentId: '',
+      classSection: '',
       sessionYear: '',
       department: '',
       fontSizes: { ...DEFAULT_STUDENT_FONT_SIZES },

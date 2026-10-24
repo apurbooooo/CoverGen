@@ -276,6 +276,7 @@ export default function CoverForm({
           id: crypto.randomUUID(),
           name: '',
           studentId: '',
+          classSection: '',
           sessionYear: '',
           department: '',
           fontSizes: { ...DEFAULT_STUDENT_FONT_SIZES },
@@ -612,20 +613,35 @@ export default function CoverForm({
               </Field>
 
               <Field
-                id={`student-dept-${idx}`}
-                label="Department"
-                fontSizeControl={fontSizeControl(`Student ${idx + 1} department`, 'department', idx)}
+                id={`student-class-section-${idx}`}
+                label="Class Section"
+                fontSizeControl={fontSizeControl(`Student ${idx + 1} class section`, 'classSection', idx)}
               >
                 <input
-                  id={`student-dept-${idx}`}
+                  id={`student-class-section-${idx}`}
                   type="text"
-                  value={student.department}
-                  onChange={(e) => updateStudent(idx, 'department', e.target.value)}
-                  placeholder="e.g. Computer Science"
-                  maxLength={100}
+                  value={student.classSection || ''}
+                  onChange={(e) => updateStudent(idx, 'classSection', e.target.value)}
+                  placeholder="e.g. 2 or A"
+                  maxLength={20}
                 />
               </Field>
             </div>
+
+            <Field
+              id={`student-dept-${idx}`}
+              label="Department"
+              fontSizeControl={fontSizeControl(`Student ${idx + 1} department`, 'department', idx)}
+            >
+              <input
+                id={`student-dept-${idx}`}
+                type="text"
+                value={student.department}
+                onChange={(e) => updateStudent(idx, 'department', e.target.value)}
+                placeholder="e.g. Computer Science"
+                maxLength={100}
+              />
+            </Field>
           </div>
         ))}
 

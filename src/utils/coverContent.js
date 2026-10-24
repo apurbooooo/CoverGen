@@ -3,7 +3,7 @@ function hasText(value) {
 }
 
 export function hasStudentDetails(student = {}) {
-  return [student.name, student.studentId, student.sessionYear, student.department].some(hasText);
+  return [student.name, student.studentId, student.classSection, student.sessionYear, student.department].some(hasText);
 }
 
 export function hasTeacherDetails(formData = {}) {

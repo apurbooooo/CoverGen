@@ -318,6 +318,7 @@
 }
 
 .tpl-person-detail.student-id { font-size: calc(12px * var(--font-scale-student-id, 1)); }
+.tpl-person-detail.student-class-section { font-size: calc(12px * var(--font-scale-class-section, 1)); }
 .tpl-person-detail.student-session-year { font-size: calc(12px * var(--font-scale-session-year, 1)); }
 .tpl-person-detail.student-department { font-size: calc(12px * var(--font-scale-department, 1)); }
 .tpl-person-detail.teacher-designation { font-size: calc(12px * var(--font-scale-teacher-designation, 1)); }

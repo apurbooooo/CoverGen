@@ -40,6 +40,7 @@ function createEmptyFormData() {
         id: crypto.randomUUID(),
         name: '',
         studentId: '',
+        classSection: '',
         sessionYear: '',
         department: '',
         fontSizes: { ...initialFormData.students[0].fontSizes },

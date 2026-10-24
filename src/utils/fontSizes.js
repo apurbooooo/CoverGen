@@ -19,6 +19,7 @@ export const DEFAULT_FONT_SIZES = {
 export const DEFAULT_STUDENT_FONT_SIZES = {
   name: 100,
   studentId: 100,
+  classSection: 100,
   sessionYear: 100,
   department: 100,
 };
