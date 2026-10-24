@@ -3,7 +3,7 @@ import { RotateCcw, Sun, Moon } from 'lucide-react';
 /**
  * Application header with wordmark, theme toggle, and reset button.
  */
-export default function Header({ onReset, appearance, onToggleAppearance }) {
+export default function Header({ onReset, appearance, onToggleAppearance, downloadActions }) {
   return (
     <header className="app-header">
       <div className="header-inner">
@@ -15,6 +15,7 @@ export default function Header({ onReset, appearance, onToggleAppearance }) {
         </a>
 
         <div className="header-actions">
+          {downloadActions && <div className="header-export">{downloadActions}</div>}
           <button
             type="button"
             className="header-btn"

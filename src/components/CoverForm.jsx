@@ -1,5 +1,5 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { Plus, Minus, Trash2, AlertCircle } from 'lucide-react';
+import { Plus, Minus, Trash2, AlertCircle, BookOpen, Palette, Cloud, CloudOff, CheckCircle2, Loader2 } from 'lucide-react';
 import FormSection from './FormSection.jsx';
 import LogoUploader from './LogoUploader.jsx';
 import TemplateSelector from './TemplateSelector.jsx';
@@ -74,10 +74,30 @@ function FontSizeStepper({ label, value, onChange }) {
   );
 }
 
+const saveStatusOptions = {
+  idle: { label: 'Ready to auto-save', Icon: Cloud },
+  saving: { label: 'Saving…', Icon: Loader2 },
+  saved: { label: 'All changes saved', Icon: CheckCircle2 },
+  off: { label: 'Auto-save off', Icon: CloudOff },
+  error: { label: 'Unable to save', Icon: AlertCircle },
+};
+
 /**
  * Main form component. Manages all form input rendering and calls onChange for every change.
  */
-export default function CoverForm({ formData, onChange, customFontLoading = false, customFontLoadError = '' }) {
+export default function CoverForm({
+  formData,
+  onChange,
+  customFontLoading = false,
+  customFontLoadError = '',
+  autoSaveEnabled = true,
+  onToggleAutoSave,
+  saveStatus = 'idle',
+  saveStatusMessage = '',
+}) {
+  const [activeTab, setActiveTab] = useState('content');
+  const SaveStatusIcon = saveStatusOptions[saveStatus]?.Icon || Cloud;
+  const saveStatusLabel = saveStatusOptions[saveStatus]?.label || saveStatusOptions.idle.label;
   const errors = validateForm(formData);
   const [fontUploadError, setFontUploadError] = useState('');
   const universityRequestRef = useRef(0);
@@ -91,6 +111,26 @@ export default function CoverForm({ formData, onChange, customFontLoading = fals
   const updateField = useCallback((key, value) => {
     onChange({ [key]: value });
   }, [onChange]);
+
+  function handleTabKeyDown(event) {
+    const tabs = ['content', 'style'];
+    const currentIndex = tabs.indexOf(activeTab);
+    const nextIndex = event.key === 'ArrowRight'
+      ? (currentIndex + 1) % tabs.length
+      : event.key === 'ArrowLeft'
+        ? (currentIndex - 1 + tabs.length) % tabs.length
+        : event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? tabs.length - 1
+            : -1;
+
+    if (nextIndex < 0) return;
+    event.preventDefault();
+    const nextTab = tabs[nextIndex];
+    setActiveTab(nextTab);
+    document.getElementById(`editor-tab-${nextTab}`)?.focus();
+  }
 
   function handleFontUpload(event) {
     const file = event.target.files?.[0];
@@ -250,7 +290,94 @@ export default function CoverForm({ formData, onChange, customFontLoading = fals
   }
 
   return (
-    <div className="form-panel" role="form" aria-label="Cover page form">
+    <div className="form-panel">
+      <div className="editor-panel-heading">
+        <div>
+          <div className="editor-eyebrow">Cover page editor</div>
+          <h2>Make it yours</h2>
+          <p>Shape a cover page that feels ready to submit.</p>
+        </div>
+      </div>
+
+      <div className="editor-tabs" role="tablist" aria-label="Cover page editor">
+        <button
+          id="editor-tab-content"
+          className={`editor-tab${activeTab === 'content' ? ' active' : ''}`}
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'content'}
+          aria-controls="editor-panel-content"
+          tabIndex={activeTab === 'content' ? 0 : -1}
+          onClick={() => setActiveTab('content')}
+          onKeyDown={handleTabKeyDown}
+        >
+          <BookOpen size={16} aria-hidden="true" />
+          <span>Content</span>
+        </button>
+        <button
+          id="editor-tab-style"
+          className={`editor-tab${activeTab === 'style' ? ' active' : ''}`}
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'style'}
+          aria-controls="editor-panel-style"
+          tabIndex={activeTab === 'style' ? 0 : -1}
+          onClick={() => setActiveTab('style')}
+          onKeyDown={handleTabKeyDown}
+        >
+          <Palette size={16} aria-hidden="true" />
+          <span>Style</span>
+        </button>
+      </div>
+
+      <section
+        className="editor-tab-panel"
+        id="editor-panel-content"
+        role="tabpanel"
+        aria-labelledby="editor-tab-content"
+        tabIndex={activeTab === 'content' ? 0 : -1}
+        hidden={activeTab !== 'content'}
+      >
+        <div className="form-panel-content" role="form" aria-label="Cover page content">
+
+      <div className={`autosave-card${autoSaveEnabled ? ' is-enabled' : ''}`}>
+        <div className="autosave-icon" aria-hidden="true">
+          <Cloud size={18} />
+        </div>
+        <div className="autosave-copy">
+          <strong>Auto-save</strong>
+          <span>{autoSaveEnabled ? 'Your draft stays on this device.' : 'Changes are not saved automatically.'}</span>
+        </div>
+        <div className="autosave-controls">
+          <div
+            className={`autosave-status autosave-status--${saveStatus}`}
+            role="status"
+            aria-live="polite"
+            title={saveStatusMessage || saveStatusLabel}
+          >
+            <SaveStatusIcon size={14} aria-hidden="true" />
+            <span>{saveStatusLabel}</span>
+          </div>
+          <button
+            type="button"
+            className={`autosave-switch${autoSaveEnabled ? ' is-on' : ''}`}
+            role="switch"
+            aria-label="Auto-save"
+            aria-checked={autoSaveEnabled}
+            aria-describedby="autosave-description"
+            onClick={onToggleAutoSave}
+          >
+            <span className="autosave-switch-state">{autoSaveEnabled ? 'On' : 'Off'}</span>
+            <span className="autosave-switch-track" aria-hidden="true"><span /></span>
+          </button>
+        </div>
+        <span id="autosave-description" className="sr-only">
+          {autoSaveEnabled ? 'Changes are saved locally after a short pause.' : 'Changes are not saved automatically. Previously saved data is kept.'}
+        </span>
+        {saveStatus === 'error' && saveStatusMessage && (
+          <div className="autosave-error-detail" role="alert">{saveStatusMessage}</div>
+        )}
+      </div>
 
       {/* ── Section 1: University Information ── */}
       <FormSection number="01" title="University Information" id="section-university">
@@ -608,90 +735,104 @@ export default function CoverForm({ formData, onChange, customFontLoading = fals
         </Field>
       </FormSection>
 
-      {/* ── Section 6: Design Customization ── */}
-      <FormSection number="06" title="Design Customization" id="section-design" defaultOpen={true}>
-        {/* Template Selector */}
-        <div>
-          <label style={{ marginBottom: '0.625rem' }}>Cover Page Template</label>
-          <TemplateSelector
-            selected={formData.template}
-            themeColor={formData.themeColor}
-            onChange={(tpl) => updateField('template', tpl)}
-          />
         </div>
+      </section>
 
-        <div className="divider" style={{ margin: '0.5rem 0' }} />
-
-        {/* Theme Color */}
-        <div>
-          <label>Accent Color</label>
-          <ThemeSelector
-            themeColor={formData.themeColor}
-            onChange={(color) => updateField('themeColor', color)}
-          />
-        </div>
-
-        <div className="divider" style={{ margin: '0.5rem 0' }} />
-
-        <div>
-          <label>Text Color</label>
-          <TextColorSelector
-            textColor={formData.textColor}
-            onChange={(color) => updateField('textColor', color)}
-          />
-        </div>
-
-        <div className="divider" style={{ margin: '0.5rem 0' }} />
-
-        {/* Font Family */}
-        <Field id="fontFamily" label="Document Font">
-          <select
-            id="fontFamily"
-            value={formData.fontFamily}
-            onChange={(e) => updateField('fontFamily', e.target.value)}
-          >
-            {fontFamilyOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-            {formData.customFontUrl && formData.customFontFamily && (
-              <option value={formData.customFontFamily}>
-                Imported: {formData.customFontName || 'Custom font'}
-              </option>
-            )}
-          </select>
-        </Field>
-
-        <div className="font-upload-control">
-          <label htmlFor="custom-font-upload">Import your own font</label>
-          <input
-            id="custom-font-upload"
-            type="file"
-            accept=".woff2,.woff,.ttf,.otf,font/woff2,font/woff,font/ttf,font/otf"
-            onChange={handleFontUpload}
-            aria-describedby="custom-font-hint"
-          />
-          <div id="custom-font-hint" className="field-hint">
-            WOFF2, WOFF, TTF, and OTF files up to 20 MB. The uploaded font is used in the preview and PDF; DOCX stores the font name and does not embed the font file.
-          </div>
-          {customFontLoading && (
-            <div className="field-hint" role="status">Loading imported font…</div>
-          )}
-          {formData.customFontName && (
-            <div className="font-upload-status">
-              <span title={formData.customFontName}>Using {formData.customFontName}</span>
-              <button type="button" onClick={removeImportedFont}>Remove</button>
+      <section
+        className="editor-tab-panel style-panel"
+        id="editor-panel-style"
+        role="tabpanel"
+        aria-labelledby="editor-tab-style"
+        tabIndex={activeTab === 'style' ? 0 : -1}
+        hidden={activeTab !== 'style'}
+      >
+        <div className="style-panel-content">
+          <section className="style-group" aria-labelledby="style-templates-heading">
+            <div className="style-group-heading">
+              <h3 id="style-templates-heading">Templates</h3>
+              <p>Choose a layout for your academic cover page.</p>
             </div>
-          )}
-          {(fontUploadError || customFontLoadError) && (
-            <div className="field-error" role="alert">
-              <AlertCircle size={12} aria-hidden="true" />
-              {fontUploadError || customFontLoadError}
+            <TemplateSelector
+              selected={formData.template}
+              themeColor={formData.themeColor}
+              onChange={(tpl) => updateField('template', tpl)}
+            />
+          </section>
+
+          <section className="style-group" aria-labelledby="style-colors-heading">
+            <div className="style-group-heading">
+              <h3 id="style-colors-heading">Document colors</h3>
+              <p>These colors apply to the cover page and its export.</p>
             </div>
-          )}
+            <div className="style-control-group">
+              <div className="style-control-label">Accent color</div>
+              <ThemeSelector
+                themeColor={formData.themeColor}
+                onChange={(color) => updateField('themeColor', color)}
+              />
+            </div>
+            <div className="style-control-group">
+              <div className="style-control-label">Text color</div>
+              <TextColorSelector
+                textColor={formData.textColor}
+                onChange={(color) => updateField('textColor', color)}
+              />
+            </div>
+          </section>
+
+          <section className="style-group" aria-labelledby="style-typography-heading">
+            <div className="style-group-heading">
+              <h3 id="style-typography-heading">Typography</h3>
+              <p>Set the typeface used throughout your document.</p>
+            </div>
+            <Field id="fontFamily" label="Document font">
+              <select
+                id="fontFamily"
+                value={formData.fontFamily}
+                onChange={(e) => updateField('fontFamily', e.target.value)}
+              >
+                {fontFamilyOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+                {formData.customFontUrl && formData.customFontFamily && (
+                  <option value={formData.customFontFamily}>
+                    Imported: {formData.customFontName || 'Custom font'}
+                  </option>
+                )}
+              </select>
+            </Field>
+
+            <div className="font-upload-control">
+              <label htmlFor="custom-font-upload">Import your own font</label>
+              <input
+                id="custom-font-upload"
+                type="file"
+                accept=".woff2,.woff,.ttf,.otf,font/woff2,font/woff,font/ttf,font/otf"
+                onChange={handleFontUpload}
+                aria-describedby="custom-font-hint"
+              />
+              <div id="custom-font-hint" className="field-hint">
+                WOFF2, WOFF, TTF, and OTF files up to 20 MB. Preview and PDF use the uploaded font; DOCX stores its name without embedding the file.
+              </div>
+              {customFontLoading && (
+                <div className="field-hint" role="status">Loading imported font…</div>
+              )}
+              {formData.customFontName && (
+                <div className="font-upload-status">
+                  <span title={formData.customFontName}>Using {formData.customFontName}</span>
+                  <button type="button" onClick={removeImportedFont}>Remove</button>
+                </div>
+              )}
+              {(fontUploadError || customFontLoadError) && (
+                <div className="field-error" role="alert">
+                  <AlertCircle size={12} aria-hidden="true" />
+                  {fontUploadError || customFontLoadError}
+                </div>
+              )}
+            </div>
+          </section>
         </div>
-
-      </FormSection>
-
+      </section>
     </div>
   );
 }

@@ -7,11 +7,12 @@
   color-scheme: light;
 
   /* ── Palette ── */
-  --color-accent: #B45309;
-  --color-accent-hover: #92400E;
-  --color-accent-subtle: #FEF3C7;
-  --color-accent-border: #FCD34D;
-  --color-accent-text: #78350F;
+  --color-accent: #426A87;
+  --color-accent-hover: #34566F;
+  --color-accent-subtle: #EAF2F7;
+  --color-accent-border: #BFD2E0;
+  --color-accent-text: #25445B;
+  --color-accent-contrast: #FFFFFF;
 
   --color-bg: #F7F6F3;
   --color-surface: #FFFFFF;
@@ -19,7 +20,7 @@
   --color-surface-hover: #ECEAE6;
   --color-border: #E4E2DD;
   --color-border-strong: #D1CFC9;
-  --color-border-focus: #B45309;
+  --color-border-focus: #426A87;
 
   --color-text-primary: #1C1917;
   --color-text-secondary: #57534E;
@@ -43,17 +44,17 @@
   --color-surface-raised: var(--color-surface);
 
   /* ── Shape ── */
-  --radius-xs: 3px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 6px;
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius-md: 13px;
+  --radius-lg: 17px;
   --radius-full: 9999px;
 
   /* ── Depth ── */
   --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.04);
   --shadow-md: 0 2px 8px rgba(28, 25, 23, 0.06);
   --shadow-paper: 0 8px 32px rgba(28, 25, 23, 0.12), 0 2px 6px rgba(28, 25, 23, 0.06);
-  --shadow-focus: 0 0 0 2px rgba(180, 83, 9, 0.20);
+  --shadow-focus: 0 0 0 3px rgba(66, 106, 135, 0.17);
 
   /* ── Typography ── */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -69,11 +70,12 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --color-accent: #F59E0B;
-  --color-accent-hover: #FBBF24;
-  --color-accent-subtle: #3D2E0A;
-  --color-accent-border: #92400E;
-  --color-accent-text: #FCD34D;
+  --color-accent: #8AB8D5;
+  --color-accent-hover: #A9CDE3;
+  --color-accent-subtle: #263B49;
+  --color-accent-border: #49697E;
+  --color-accent-text: #C0DDF0;
+  --color-accent-contrast: #152630;
 
   --color-bg: #1A1816;
   --color-surface: #242220;
@@ -81,7 +83,7 @@
   --color-surface-hover: #353331;
   --color-border: #3D3A36;
   --color-border-strong: #524F4A;
-  --color-border-focus: #F59E0B;
+  --color-border-focus: #8AB8D5;
 
   --color-text-primary: #F5F5F4;
   --color-text-secondary: #D6D3D1;
@@ -95,12 +97,12 @@
   --color-success-bg: #14352A;
   --color-warning: #FBBF24;
 
-  --color-action-disabled: #6B5E4E;
+  --color-action-disabled: #526675;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.16);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.24);
   --shadow-paper: 0 8px 32px rgba(0, 0, 0, 0.40), 0 2px 6px rgba(0, 0, 0, 0.20);
-  --shadow-focus: 0 0 0 2px rgba(245, 158, 11, 0.25);
+  --shadow-focus: 0 0 0 3px rgba(138, 184, 213, 0.22);
 }
 
 
@@ -369,6 +371,23 @@ label {
 
 .app-shell { display: flex; min-height: 100vh; flex-direction: column; }
 
+.autosave-loading-shell { align-items: center; justify-content: center; }
+
+.autosave-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.autosave-loading svg { color: var(--color-accent); }
+
 /* ── Header ── */
 .app-header {
   position: sticky;
@@ -382,13 +401,13 @@ label {
 
 .header-inner {
   display: flex;
-  width: min(1360px, 100%);
-  height: 52px;
+  width: min(1480px, 100%);
+  min-height: 64px;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 1.75rem;
 }
 
 .header-brand {
@@ -445,7 +464,15 @@ label {
   }
 }
 
-.header-actions { display: flex; align-items: center; gap: 0.35rem; }
+.header-actions { display: flex; align-items: center; gap: 0.45rem; }
+
+.header-export {
+  display: flex;
+  align-items: center;
+  margin-right: 0.15rem;
+  padding-right: 0.75rem;
+  border-right: 1px solid var(--color-border);
+}
 
 .header-btn {
   display: inline-flex;
@@ -455,7 +482,7 @@ label {
   height: 34px;
   padding: 0 0.6rem;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
@@ -473,24 +500,36 @@ label {
 
 /* ── Main Content ── */
 .app-main {
-  width: min(1360px, 100%);
+  width: min(1480px, 100%);
   flex: 1;
   margin: 0 auto;
-  padding: 1.25rem 1.5rem 2rem;
+  padding: 1.5rem 1.75rem 2.25rem;
 }
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 480px) 1fr;
+  grid-template-columns: minmax(360px, 0.78fr) minmax(0, 1.22fr);
   align-items: start;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .workspace-form, .workspace-preview { min-width: 0; }
 
+.workspace-form {
+  position: sticky;
+  top: 5rem;
+  max-height: calc(100dvh - 6rem);
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  scrollbar-gutter: stable;
+}
+
 .workspace-preview {
   position: sticky;
-  top: 4.5rem;
+  top: 5rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -508,7 +547,7 @@ label {
 
 .footer-inner {
   display: flex;
-  width: min(1360px, 100%);
+  width: min(1480px, 100%);
   flex-direction: column;
   gap: 0.6rem;
   margin: 0 auto;
@@ -589,21 +628,30 @@ label {
 
 @media (max-width: 1024px) {
   .workspace { grid-template-columns: minmax(0, 1fr); }
+  .workspace-form {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
   .workspace-preview { position: static; }
 }
 
 @media (max-width: 600px) {
   input, select, textarea { min-height: 44px; font-size: 1rem; }
   .header-inner {
-    height: 48px;
-    gap: 0.5rem;
+    min-height: 56px;
+    gap: 0.4rem;
     padding-left: max(0.625rem, env(safe-area-inset-left));
     padding-right: max(0.625rem, env(safe-area-inset-right));
   }
   .header-title { font-size: clamp(1.25rem, 5vw, 1.5rem); }
-  .header-actions { gap: 0.3rem; }
-  .header-btn { width: 40px; height: 40px; padding: 0; }
+  .header-actions { gap: 0.25rem; }
+  .header-export { margin-right: 0; padding-right: 0.35rem; }
+  .header-btn { width: 36px; height: 36px; padding: 0; }
   .header-btn span { display: none; }
+  .header-export .download-btn-main { width: 36px; min-height: 36px; padding: 0; }
+  .header-export .download-label { display: none; }
   .app-main {
     padding-top: 0.875rem;
     padding-right: max(0.75rem, env(safe-area-inset-right));
@@ -678,6 +726,10 @@ label {
   .brand-mark { width: 28px; height: 28px; }
   .header-brand { gap: 0.4rem; }
   .header-title { font-size: 1.25rem; }
+  .header-inner { gap: 0.25rem; }
+  .header-export { padding-right: 0.25rem; }
+  .header-export .download-btn-main,
+  .header-btn { width: 32px; height: 32px; min-height: 32px; }
   .app-main {
     padding-right: max(0.625rem, env(safe-area-inset-right));
     padding-left: max(0.625rem, env(safe-area-inset-left));

@@ -43,7 +43,10 @@ export default function CoverPreview({ formData, hasContent }) {
       Number.parseFloat(styles.paddingLeft) -
       Number.parseFloat(styles.paddingRight);
     const pageWidth = 794;
-    const fitZoom = Math.floor((containerWidth / pageWidth) * 100);
+    const widthFitZoom = Math.floor((containerWidth / pageWidth) * 100);
+    const availableHeight = Math.max(280, window.innerHeight - 240);
+    const heightFitZoom = Math.floor((availableHeight / 1123) * 100);
+    const fitZoom = Math.min(widthFitZoom, heightFitZoom);
     const fittingZoom = ZOOM_LEVELS.reduce(
       (largestFit, level) => level <= fitZoom && level > largestFit ? level : largestFit,
       ZOOM_LEVELS[0]
@@ -52,7 +55,7 @@ export default function CoverPreview({ formData, hasContent }) {
   }, []);
 
   useLayoutEffect(() => {
-    if (window.matchMedia('(max-width: 600px)').matches) fitToScreen();
+    fitToScreen();
   }, [fitToScreen]);
 
   useEffect(() => {

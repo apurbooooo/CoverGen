@@ -6,7 +6,7 @@ import { buildPdfFilename } from '../utils/sanitizeFilename.js';
 /**
  * Document export buttons with loading state and error handling.
  */
-export default function DownloadButton({ formData, customFontLoading = false, onSuccess, onError }) {
+export default function DownloadButton({ formData, customFontLoading = false, onSuccess, onError, compact = false }) {
   const [loadingFormat, setLoadingFormat] = useState('');
   const [genError, setGenError] = useState('');
 
@@ -53,7 +53,7 @@ export default function DownloadButton({ formData, customFontLoading = false, on
   }
 
   return (
-    <div className="download-section">
+    <div className={`download-section${compact ? ' download-section-compact' : ''}`}>
       <div className="download-actions">
         <button
           id="btn-download-docx"
@@ -67,12 +67,16 @@ export default function DownloadButton({ formData, customFontLoading = false, on
           {loadingFormat === 'docx' ? (
             <>
               <div className="download-btn-spinner" aria-hidden="true" />
-              Generating DOCX...
+                <span className="download-label">
+                  {compact ? 'Working' : 'Generating DOCX...'}
+                </span>
             </>
           ) : (
             <>
               <Download size={18} />
-              Download DOCX
+                <span className="download-label">
+                  {compact ? 'DOCX' : 'Download DOCX'}
+                </span>
             </>
           )}
         </button>
@@ -88,7 +92,7 @@ export default function DownloadButton({ formData, customFontLoading = false, on
             : 'Open print dialog to save as PDF'}
         >
           <FileDown size={18} />
-          Download PDF
+          <span className="download-label">{compact ? 'PDF' : 'Download PDF'}</span>
         </button>
       </div>
 
